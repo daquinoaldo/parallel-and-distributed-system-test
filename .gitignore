@@ -23,6 +23,12 @@
 *.out
 *.app
 
+# CMake
+cmake-build-debug
+cmake-build
+
+# Infer
+infer-out
+
 # CLion
 .idea
-cmake-build-debug

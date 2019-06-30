@@ -1,6 +1,7 @@
 #ifndef SKYLINE_QUEUE_HPP
 #define SKYLINE_QUEUE_HPP
 
+
 #include <mutex>
 #include <condition_variable>
 #include <deque>
@@ -35,10 +36,10 @@ public:
     return item;
   }
 
-  T get(int i) {
+  T get(unsigned long i) {
     std::unique_lock<std::mutex> lock(mutex);
     condition.wait(lock, [=] { return !deque.empty(); });
-    T item(std::move(deque.at(i)));
+    T item(std::move(deque[i]));
     deque.pop_back();
     return item;
   }

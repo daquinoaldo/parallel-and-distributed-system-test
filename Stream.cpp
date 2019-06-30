@@ -1,15 +1,21 @@
 #include "Stream.hpp"
 
-Stream::Stream(int windowSize, int windowShift, int tupleSize, int streamLength, int seed)
-: w(windowSize), k(windowShift), t(tupleSize), l(streamLength) {
+Stream::Stream(unsigned int windowSize, unsigned int windowShift, unsigned int tupleSize, unsigned int streamLength,
+               unsigned int seed) : w((int) windowSize), k((int) windowShift), t((int) tupleSize),
+                                    l((int) streamLength) {
   // init rand for newTuple()
-  srand (seed);
+  srand(seed);
 }
 
 std::vector<int> Stream::newTuple() {
-  std::vector<int> tuple(t);
-  for (int i = 0; i < t; i++)
-    tuple[i] = rand(); // NOLINT(cert-msc30-c,cert-msc50-cpp)
+  std::vector<int> tuple((unsigned long) t);
+  for (int i = 0; i < t; i++) {
+    auto r = rand();   // NOLINT(cert-msc30-c,cert-msc50-cpp)
+#ifdef DEBUG
+    r = r % 100;
+#endif
+    tuple[(unsigned long) i] = r;
+  }
   return tuple;
 }
 
@@ -19,11 +25,12 @@ void Stream::generateTuples() {
 }
 
 std::vector<std::vector<int>> Stream::getWindow() {
-  std::vector<std::vector<int>> window(w);
+  std::vector<std::vector<int>> window((unsigned long) w);
   for (int i = 0; i < w; i++)
     // pop first k (get and delete) and get the others leaving in the Queue
     // TODO: handle last windows wrong size
-    window[i] = i < k ? tuples->pop() : tuples->get(i - k);
+    // TODO: lock not in each get but in the entire window
+    window[(unsigned long) i] = i < k ? tuples->pop() : tuples->get((unsigned long) (i - k));
   return window;
 }
 
