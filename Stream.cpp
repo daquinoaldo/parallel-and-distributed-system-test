@@ -24,11 +24,19 @@ void Stream::generateTuples() {
     tuples->push(newTuple());
 }
 
+std::string Stream::serializeStream() {
+  std::string string = "[";
+  for (unsigned long i = 0; i < tuples->size(); i++)
+    string += serializeTuple(tuples->get(i)) + (i != tuples->size() - 1 ? ", " : "]");
+  return string;
+}
+
 std::vector<std::vector<int>> Stream::getWindow() {
   std::vector<std::vector<int>> window((unsigned long) w);
-  for (int i = 0; i < w; i++)
+  // Will return empty vector if all the stream is processed.
+  // The last window may contain less than w items.
+  for (int i = 0; i < std::min(w, (int) tuples->size()); i++)
     // pop first k (get and delete) and get the others leaving in the Queue
-    // TODO: handle last windows wrong size
     // TODO: lock not in each get but in the entire window
     window[(unsigned long) i] = i < k ? tuples->pop() : tuples->get((unsigned long) (i - k));
   return window;

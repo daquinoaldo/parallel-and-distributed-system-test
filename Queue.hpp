@@ -39,9 +39,12 @@ public:
   T get(unsigned long i) {
     std::unique_lock<std::mutex> lock(mutex);
     condition.wait(lock, [=] { return !deque.empty(); });
-    T item(std::move(deque[i]));
-    deque.pop_back();
+    T item(deque[i]);
     return item;
+  }
+
+  unsigned long size() {
+    return deque.size();
   }
 
 };

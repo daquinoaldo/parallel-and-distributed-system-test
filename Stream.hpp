@@ -3,8 +3,8 @@
 
 
 #include <cstdlib>
-#include <vector>
 #include <string>
+#include <vector>
 #include "Queue.hpp"
 
 class Stream {
@@ -16,6 +16,8 @@ public:
   std::vector<std::vector<int>> getWindow();
   static std::string serializeTuple(std::vector<int> tuple);
   static std::string serializeWindow(std::vector<std::vector<int>> window);
+
+  std::string serializeStream(); // debug
 
 private:
   int w;
