@@ -1,5 +1,6 @@
 #include "Skyline.hpp"
 
+// TODO: find and fix a bug in skyline computation
 std::vector<std::vector<int>> Skyline::processWindow(std::vector<std::vector<int>> window) {
   unsigned long i = 0;
   // For each tuple in window

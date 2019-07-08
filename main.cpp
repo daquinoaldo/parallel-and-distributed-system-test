@@ -1,44 +1,54 @@
 #include <iostream>
-#include "Stream.hpp"
+#include "Utils.hpp"
 #include "Skyline.hpp"
+#include "Stream.hpp"
+#include "SecureQueue.hpp"
 
-void sequential(Stream *stream) {
-  // first worker: tuple stream producer
-  stream->generateTuples();
-  std::cout << "Stream: " << stream->serializeStream() << std::endl;
+void sequential(unsigned int seed, int w, int t, int k, long l) {
+  // data structures
+  auto inputStream = new Stream(t, w, k, l, seed);
+  auto outputStream = new Queue<std::vector<std::vector<int>>>;
 
-  // workers: pick a window, calculate skyline, put it in output stream
-  auto window = stream->getWindow();
+  // generate input stream
+  inputStream->generateTuples();
+  std::cout << "Stream: " << Utils::serializeStream(inputStream) << std::endl << std::endl << std::endl;
+
+  // pick a window, calculate skyline, put it in output stream
+  auto window = inputStream->getWindow();
   while (!window.empty()) {
     auto skyline = Skyline::processWindow(window);
-    std::cout << "[Worker 1] Window: " << Stream::serializeWindow(window) << std::endl;
-    std::cout << "[Worker 1] Skyline: " << Stream::serializeWindow(skyline) << std::endl;
-    window = stream->getWindow();
+    std::cout << "Window: " << Utils::serializeWindow(window) << std::endl;
+    std::cout << "Skyline: " << Utils::serializeWindow(skyline) << std::endl << std::endl;
+    outputStream->push(skyline);
+    window = inputStream->getWindow();
   }
 
+  // print the output stream
+  std::cout << std::endl << "Skylines:" << std::endl;
+  auto skyline = outputStream->pop();
+  while (!skyline.empty()) {
+    std::cout << Utils::serializeWindow(skyline) << std::endl;
+    skyline = outputStream->pop();
+  }
 }
 
-//int main(int argc, char *argv[]) {
-int main() {
+int main(int argc, char *argv[]) {
 
-  /*
   // Process argv
-  if (argc < 5 || argc > 6) {
+  if (argc < 6 || argc > 7) {
     std::cout << "Usage: skyline seed w t k l [nw]" << std::endl;
     return 1;
   }
 
   auto seed = (unsigned int) atoi(argv[1]); // NOLINT(cert-err34-c)
-  auto w = (unsigned int) atoi(argv[2]); // NOLINT(cert-err34-c)
-  auto t = (unsigned int) atoi(argv[3]); // NOLINT(cert-err34-c)
-  auto k = (unsigned int) atoi(argv[4]); // NOLINT(cert-err34-c)
-  auto l = (unsigned int) atoi(argv[5]); // NOLINT(cert-err34-c)
-  auto nw = argc == 6 ? (unsigned int) atoi(argv[1]) : 1; // NOLINT(cert-err34-c)
-   */
+  auto w = atoi(argv[2]); // NOLINT(cert-err34-c)
+  auto t = atoi(argv[3]); // NOLINT(cert-err34-c)
+  auto k = atoi(argv[4]); // NOLINT(cert-err34-c)
+  auto l = atol(argv[5]); // NOLINT(cert-err34-c)
+  auto nw = argc == 7 ? atoi(argv[6]) : 1; // NOLINT(cert-err34-c)
 
 
   // Sequential version
-  auto stream = new Stream();
-  sequential(stream);
+  sequential(seed, w, t, k, l);
 
 }
