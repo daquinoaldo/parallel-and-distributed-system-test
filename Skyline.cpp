@@ -1,6 +1,5 @@
 #include "Skyline.hpp"
 
-// TODO: find and fix a bug in skyline computation
 std::vector<std::vector<int>> Skyline::processWindow(std::vector<std::vector<int>> window) {
   unsigned long i = 0;
   // For each tuple in window
@@ -24,7 +23,7 @@ std::vector<std::vector<int>> Skyline::processWindow(std::vector<std::vector<int
       }
       // Else, them remains both on the window, since them are still candidates for the skyline.
       // Check the next item
-      j++;
+      else j++;
     }
     if (alive) i++;  // else window[i] is already a new item.
   }
