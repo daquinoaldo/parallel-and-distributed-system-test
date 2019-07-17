@@ -1,13 +1,10 @@
 #include <iostream>
 #include "Utils.hpp"
-#include "Skyline.hpp"
-#include "Stream.hpp"
-#include "SecureQueue.hpp"
 
 void sequential(unsigned int seed, int w, int t, int k, long l) {
   // data structures
   auto inputStream = new Stream(t, w, k, l, seed);
-  auto outputStream = new Queue<std::vector<std::vector<int>>>;
+  auto outputStream = new Queue<Skyline>;
 
   // generate input stream
   inputStream->generateTuples();
@@ -16,7 +13,7 @@ void sequential(unsigned int seed, int w, int t, int k, long l) {
   // pick a window, calculate skyline, put it in output stream
   auto window = inputStream->getWindow();
   while (!window.empty()) {
-    auto skyline = Skyline::processWindow(window);
+    auto skyline = Utils::processWindow(window);
     std::cout << "Window: " << Utils::serializeWindow(window) << std::endl;
     std::cout << "Skyline: " << Utils::serializeWindow(skyline) << std::endl << std::endl;
     outputStream->push(skyline);

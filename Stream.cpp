@@ -4,24 +4,24 @@ Stream::Stream(int t, int w, int k, long l, unsigned int seed) : t(t), w(w), k(k
   srand(seed);
 }
 
-void Stream::push(const std::vector<int> &item) {
+void Stream::push(const Tuple &item) {
   queue.push(item);
 }
 
-std::vector<int> Stream::pop() {
+Tuple Stream::pop() {
   return queue.pop();
 }
 
-std::vector<int> Stream::get(unsigned long i) {
+Tuple Stream::get(unsigned long i) {
   auto item(queue.get(i));
   return item;
 }
 
-std::vector<std::vector<int>> Stream::getWindow() {
+Window Stream::getWindow() {
   // last window can be smaller than w (window size)
   bool lastWindow = queue.size() <= (unsigned long) w;
   auto size = lastWindow ? queue.size() : (unsigned long) w;
-  std::vector<std::vector<int>> window(size);
+  Window window(size);
   for (unsigned long i = 0; i < size; i++)
     // pop first k, get the others leaving in the queue
     // if size < w (last window) pop all the item, since there won't be another window
@@ -29,8 +29,8 @@ std::vector<std::vector<int>> Stream::getWindow() {
   return window;
 }
 
-std::vector<int> Stream::newTuple() {
-  std::vector<int> tuple((unsigned long) t);
+Tuple Stream::newTuple() {
+  Tuple tuple((unsigned long) t);
   for (int i = 0; i < t; i++) {
     auto r = rand(); // NOLINT(cert-msc30-c,cert-msc50-cpp)
 #ifdef DEBUG

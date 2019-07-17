@@ -2,28 +2,28 @@
 #define SKYLINE_STREAM_HPP
 
 
-#include <vector>
 #include "Queue.hpp"
+#include "types.hpp"
 
 class Stream {
 
 private:
   int t, w, k;
   long l;
-  Queue<std::vector<int>> queue;
+  Queue<Tuple> queue;
 
-  void push(const std::vector<int> &item);
+  void push(const Tuple &item);
 
-  std::vector<int> pop();
+  Tuple pop();
 
-  std::vector<int> newTuple();
+  Tuple newTuple();
 
 public:
   Stream(int t, int w, int k, long l, unsigned int seed);
 
-  std::vector<int> get(unsigned long i);
+  Tuple get(unsigned long i);
 
-  std::vector<std::vector<int>> getWindow();
+  Window getWindow();
   void generateTuples();
 
   unsigned long size();

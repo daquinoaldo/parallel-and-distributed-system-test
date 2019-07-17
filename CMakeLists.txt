@@ -16,4 +16,4 @@ endif ()
 # Debug flags
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
 
-add_executable(skyline main.cpp Utils.cpp Utils.hpp Skyline.cpp Skyline.hpp Stream.cpp Stream.hpp SecureQueue.hpp)
+add_executable(skyline main.cpp Utils.cpp Utils.hpp Stream.cpp Stream.hpp SecureQueue.hpp types.hpp)
