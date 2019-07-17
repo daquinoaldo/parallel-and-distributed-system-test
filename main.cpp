@@ -4,28 +4,33 @@
 void sequential(unsigned int seed, int w, int t, int k, long l) {
   // data structures
   auto inputStream = new Stream(t, w, k, l, seed);
-  auto outputStream = new Queue<Skyline>;
+  auto outputStream = new Queue<std::pair<int, Skyline>>;
 
   // generate input stream
   inputStream->generateTuples();
   std::cout << "Stream: " << Utils::serializeStream(inputStream) << std::endl << std::endl << std::endl;
 
   // pick a window, calculate skyline, put it in output stream
-  auto window = inputStream->getWindow();
+  int wIndex;
+  Window window;
+  std::tie(wIndex, window) = inputStream->getWindow();
   while (!window.empty()) {
     auto skyline = Utils::processWindow(window);
-    std::cout << "Window: " << Utils::serializeWindow(window) << std::endl;
-    std::cout << "Skyline: " << Utils::serializeWindow(skyline) << std::endl << std::endl;
-    outputStream->push(skyline);
-    window = inputStream->getWindow();
+    std::cout << "Window " + std::to_string(wIndex) + ":\t" << Utils::serializeWindow(window) << std::endl;
+    std::cout << "Skyline " + std::to_string(wIndex) + ":\t" << Utils::serializeWindow(skyline) << std::endl
+              << std::endl;
+    outputStream->push(std::pair(wIndex, skyline));
+    std::tie(wIndex, window) = inputStream->getWindow();
   }
 
   // print the output stream
+  int sIndex;
+  Skyline skyline;
   std::cout << std::endl << "Skylines:" << std::endl;
-  auto skyline = outputStream->pop();
+  std::tie(sIndex, skyline) = outputStream->pop();
   while (!skyline.empty()) {
-    std::cout << Utils::serializeWindow(skyline) << std::endl;
-    skyline = outputStream->pop();
+    std::cout << std::to_string(sIndex) + ":\t" + Utils::serializeWindow(skyline) << std::endl;
+    std::tie(sIndex, skyline) = outputStream->pop();
   }
 }
 

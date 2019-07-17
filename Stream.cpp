@@ -17,7 +17,7 @@ Tuple Stream::get(unsigned long i) {
   return item;
 }
 
-Window Stream::getWindow() {
+std::pair<int, Window> Stream::getWindow() {
   // last window can be smaller than w (window size)
   bool lastWindow = queue.size() <= (unsigned long) w;
   auto size = lastWindow ? queue.size() : (unsigned long) w;
@@ -26,7 +26,7 @@ Window Stream::getWindow() {
     // pop first k, get the others leaving in the queue
     // if size < w (last window) pop all the item, since there won't be another window
     window[i] = i < (unsigned long) k || lastWindow ? pop() : get(i - (unsigned long) k);
-  return window;
+  return std::pair(index++, window);
 }
 
 Tuple Stream::newTuple() {
