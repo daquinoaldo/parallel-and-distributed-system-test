@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.14)
 project(skyline)
 
 set(CMAKE_CXX_STANDARD 17)
+SET(CMAKE_CXX_FLAGS -pthread)
 
 # Compiler warning flags
 set(GCC_W_ALL_LINUX "-Wall -Wextra -pedantic -Wshadow -Walloc-zero -Wduplicated-branches -Wduplicated-cond -Wconversion -Wmissing-declarations -Wmissing-include-dirs -Wnull-dereference  -Wsuggest-final-methods -Wsuggest-final-types")
@@ -16,4 +17,4 @@ endif ()
 # Debug flags
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
 
-add_executable(skyline main.cpp Utils.cpp Utils.hpp Stream.cpp Stream.hpp SecureQueue.hpp types.hpp)
+add_executable(skyline main.cpp Utils.cpp Utils.hpp Stream.cpp Stream.hpp SecureQueue.hpp types.hpp SecureStream.cpp SecureStream.hpp Workers.cpp Workers.hpp)

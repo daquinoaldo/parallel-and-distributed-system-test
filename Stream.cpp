@@ -29,23 +29,19 @@ std::pair<int, Window> Stream::getWindow() {
   return std::pair(index++, window);
 }
 
-Tuple Stream::newTuple() {
-  Tuple tuple((unsigned long) t);
-  for (int i = 0; i < t; i++) {
-    auto r = rand(); // NOLINT(cert-msc30-c,cert-msc50-cpp)
-#ifdef DEBUG
-    r = r % 100;
-#endif
-    tuple[(unsigned long) i] = r;
-  }
-  return tuple;
-}
-
-void Stream::generateTuples() {
-  for (long i = 0; i < l; i++)
-    push(newTuple());
-}
-
 unsigned long Stream::size() {
   return queue.size();
+}
+
+int Stream::getT() {
+  return t;
+}
+
+int Stream::getW() {
+  return w;
+}
+
+
+long Stream::getL() {
+  return l;
 }

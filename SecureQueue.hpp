@@ -13,6 +13,7 @@ private:
   std::mutex mutex;
   std::condition_variable condition;
   Queue<T> *queue = new Queue<T>;
+  bool EOQ = false;
 
 public:
 
@@ -29,14 +30,13 @@ public:
 
   T pop() {
     std::unique_lock<std::mutex> lock(mutex);
-    condition.wait(lock, [=] { return queue->size() > 0; });
+    condition.wait(lock, [=] { return queue->size() > 0 || EOQ; });
     return queue->pop();
   }
 
-  T get(unsigned long i) {
+  void setEOQ() {
     std::unique_lock<std::mutex> lock(mutex);
-    condition.wait(lock, [=] { return queue->size() > i; });
-    return queue->get(i);
+    EOQ = true;
   }
 
   unsigned long size() {

@@ -1,6 +1,19 @@
 #include "Utils.hpp"
 
 
+Tuple Utils::newTuple(int t) {
+  Tuple tuple((unsigned long) t);
+  for (int i = 0; i < t; i++) {
+    auto r = rand(); // NOLINT(cert-msc30-c,cert-msc50-cpp)
+#ifdef DEBUG
+    r = r % 100;
+#endif
+    tuple[(unsigned long) i] = r;
+  }
+  return tuple;
+}
+
+
 std::string Utils::serializeTuple(Tuple tuple) {
   std::string string = "<";
   for (unsigned long i = 0; i < tuple.size(); i++)
@@ -17,12 +30,12 @@ std::string Utils::serializeWindow(Window window) {
 }
 
 
-std::string Utils::serializeStream(Stream *stream) {
+/*std::string Utils::serializeStream(Stream *stream) {
   std::string string = "[";
   for (unsigned long i = 0; i < stream->size(); i++)
     string += serializeTuple(stream->get(i)) + (i != stream->size() - 1 ? ", " : "]");
   return string;
-}
+}*/
 
 
 short Utils::compareTuple(const Tuple &ti, const Tuple &tj) {
