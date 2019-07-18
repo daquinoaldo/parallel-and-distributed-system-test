@@ -12,7 +12,7 @@ class SecureQueue {
 private:
   std::mutex mutex;
   std::condition_variable condition;
-  Queue<T> *queue = new Queue<T>;
+  Queue<T> queue;
   bool EOQ = false;
 
 public:
@@ -23,15 +23,15 @@ public:
     // unique lock will be released when leave this block
     {
       std::unique_lock<std::mutex> lock(mutex);
-      queue->push(item);
+      queue.push(item);
     }
     condition.notify_one();
   }
 
   T pop() {
     std::unique_lock<std::mutex> lock(mutex);
-    condition.wait(lock, [=] { return queue->size() > 0 || EOQ; });
-    return queue->pop();
+    condition.wait(lock, [=] { return queue.size() > 0 || EOQ; });
+    return queue.pop();
   }
 
   void setEOQ() {
@@ -41,7 +41,7 @@ public:
 
   unsigned long size() {
     std::unique_lock<std::mutex> lock(mutex);
-    return queue->size();
+    return queue.size();
   }
 
 };

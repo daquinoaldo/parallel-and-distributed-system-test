@@ -15,7 +15,7 @@ public:
   Queue() = default;
 
   void push(T const &item) {
-    deque.push_front(item);
+    deque.push_front(std::move(item));
   }
 
   T pop() {
@@ -25,7 +25,7 @@ public:
   }
 
   T get(unsigned long i) {
-    T item(deque[size() - 1 - i]);
+    T item(std::move(deque[size() - 1 - i]));
     return item;
   }
 

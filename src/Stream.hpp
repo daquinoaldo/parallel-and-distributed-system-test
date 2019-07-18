@@ -2,6 +2,7 @@
 #define SKYLINE_STREAM_HPP
 
 
+#include <cstdlib>
 #include "types.hpp"
 #include "Queue.hpp"
 

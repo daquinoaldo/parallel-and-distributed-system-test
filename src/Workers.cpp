@@ -21,8 +21,10 @@ void Workers::work(Stream *inputStream, Queue<std::pair<int, Skyline>> *outputSt
   std::tie(wIndex, window) = inputStream->getWindow();
   while (!window.empty()) {
     auto skyline = Utils::processWindow(window);
+#ifdef DEBUG
     std::cout << "[Worker]\tWindow " + std::to_string(wIndex) + ":\t" + Utils::serializeWindow(window) + "\n";
     std::cout << "[Worker]\tSkyline " + std::to_string(wIndex) + ":\t" + Utils::serializeWindow(skyline) + "\n";
+#endif
     outputStream->push(std::pair(wIndex, skyline));
     std::tie(wIndex, window) = inputStream->getWindow();
   }
@@ -33,12 +35,16 @@ void Workers::secureWork(SecureStream *inputStream, SecureQueue<std::pair<int, S
   Window window;
   std::tie(wIndex, window) = inputStream->getWindow();
   while (!window.empty()) {
+#ifdef DEBUG
     std::cout << "[Worker " + std::to_string(wid) + "]\tWindow " + std::to_string(wIndex) + ":\t" +
                  Utils::serializeWindow(window) + "\n";
+#endif
     auto skyline = Utils::processWindow(window);
     outputStream->push(std::pair(wIndex, skyline));
+#ifdef DEBUG
     std::cout << "[Worker " + std::to_string(wid) + "]\tSkyline " + std::to_string(wIndex) + ":\t" +
                  Utils::serializeWindow(skyline) + "\n";
+#endif
     std::tie(wIndex, window) = inputStream->getWindow();
   }
   outputStream->setEOQ();

@@ -23,12 +23,17 @@
 *.out
 *.app
 
-# CMake
+# Make, CMake & binaries
 cmake-build-debug
 cmake-build
+skyline-debug
+skyline
 
 # Infer
 infer-out
 
 # CLion
 .idea
+
+# Custom
+sync.sh
