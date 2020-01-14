@@ -67,19 +67,36 @@ void autopilot() {
   int w = 50;       // window size
   int t = 10;       // tuple size
   int k = 1;        // sliding factor
-  long l = 10000;   // stream length: 10.000
+  long l = 100000;  // stream length: 100.000
   bool v = false;   // verbose
-  int nw = 4;
 
-  // run and save times
+    // compute number of threads
+  unsigned concurentThreadsSupported = std::thread::hardware_concurrency();
+  if (concurentThreadsSupported <= 0) // not able to detect
+    concurentThreadsSupported = 128;
+  std::cout << "AUTOPILOT: skyline " << w << " " << t << " " << k << " " << l << " " << v <<
+    " " << concurentThreadsSupported << std::endl;
+
+  unsigned limit = floor(log2(concurentThreadsSupported));
+  long times[limit] = {};
+
+  // run sequential
   long seq = sequential(seed, w, t, k, l, v);
-  long par = parallel(seed, w, t, k, l, v, nw);
+
+  // run parallel
+  for (int i = 0; i <= limit; i++) {
+    unsigned nw = pow (2, i);
+    times[i] = parallel(seed, w, t, k, l, v, nw);
+  }
 
   // report
   std::cout << std::endl;
   std::cout << "AUTOPILOT REPORT" << std::endl;
-  std::cout << "Sequential:\t" << seq << std::endl;
-  std::cout << "Parallel:\t" << par << std::endl;
+  std::cout << "Sequential:\t\t" << seq << std::endl;
+  for (int i = 0; i <= limit; i++) {
+    unsigned nw = pow (2, i);
+    std::cout << "Parallel " << nw << " threads:\t" << times[i] << std::endl;
+  }
   std::cout << std::endl;
 }
 
@@ -105,7 +122,7 @@ void help() {
 int main(int argc, char *argv[]) {
 
   // auto mode arguments
-  if (argc == 2 && strcmp(argv[1], "auto") == 0) {
+  if (argc >= 2 && strcmp(argv[1], "auto") == 0) {
     autopilot();  // run the autopilot
     return 0;     // stop execution of standard workflow
   }
