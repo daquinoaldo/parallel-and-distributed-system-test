@@ -82,6 +82,21 @@ void autopilot() {
   std::cout << std::endl;
 }
 
+void help() {
+  std::cout << std::endl;
+  std::cout << "Usage: skyline seed w t k l [nw]" << std::endl;
+  std::cout << "seed = seed for random numbers" << std::endl;
+  std::cout << "w = window size" << std::endl;
+  std::cout << "t = tuple size" << std::endl;
+  std::cout << "k = shift factor" << std::endl;
+  std::cout << "l = stream length" << std::endl;
+  std::cout << "nw = number of worker, optional, empty or 0 for sequential execution" << std::endl;
+  std::cout << std::endl;
+  std::cout << "Auto usage: skyline auto" << std::endl;
+  std::cout << "Will run parallel and sequential tests with timers and print some statistics." << std::endl;
+  std::cout << std::endl;
+}
+
 
 // TODO: pointer vs references: a references produced a deep copy
 // TODO: all pointers must be deallocated explicitly with delete
@@ -89,34 +104,29 @@ int main(int argc, char *argv[]) {
 
   // auto mode arguments
   if (argc == 2 && strcmp(argv[1], "auto") == 0) {
-    autopilot(); // run the autopilot
-    return 0;   // stop execution of standard workflow
+    autopilot();  // run the autopilot
+    return 0;     // stop execution of standard workflow
   }
 
   // help message
-  if (argc < 6 || argc > 7) {
-    std::cout << std::endl;
-    std::cout << "Usage: skyline seed w t k l [nw]" << std::endl; // TODO: max tuple value?
-    std::cout << "seed = seed for random numbers" << std::endl;
-    std::cout << "w = window size" << std::endl;
-    std::cout << "t = tuple size" << std::endl;
-    std::cout << "k = shift factor" << std::endl;
-    std::cout << "l = stream length" << std::endl;
-    std::cout << "nw = number of worker, optional, empty or 0 for sequential execution" << std::endl;
-    std::cout << std::endl;
-    std::cout << "Auto usage: skyline auto" << std::endl;
-    std::cout << "Will run parallel and sequential tests with timers and print some statistics." << std::endl;
-    std::cout << std::endl;
-    return 1;
+  if (argc == 2 && (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0)) {
+    help();    // show the help message
+    return 0;  // stop execution of standard workflow
+  }
+
+  // wrong args: help message
+  if (argc != 6 && argc != 7) {
+    help();    // show the help message
+    return 1;  // return error code
   }
 
   // standard arguments
-  auto seed = (unsigned int) atoi(argv[1]); // NOLINT(cert-err34-c)
-  auto w = atoi(argv[2]); // NOLINT(cert-err34-c)
-  auto t = atoi(argv[3]); // NOLINT(cert-err34-c)
-  auto k = atoi(argv[4]); // NOLINT(cert-err34-c)
-  auto l = atol(argv[5]); // NOLINT(cert-err34-c)
-  auto nw = argc == 7 ? atoi(argv[6]) : 0; // NOLINT(cert-err34-c)
+  auto seed = (unsigned int) atoi(argv[1]);
+  auto w = atoi(argv[2]);
+  auto t = atoi(argv[3]);
+  auto k = atoi(argv[4]);
+  auto l = atol(argv[5]);
+  auto nw = argc == 7 ? atoi(argv[6]) : 0;
 
   std::cout << "[Main]\tExpected windows: " << ceil(((double) (l - w)) / k) + 1 << std::endl;
 

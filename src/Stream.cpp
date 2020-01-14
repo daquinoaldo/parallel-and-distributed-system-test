@@ -41,7 +41,6 @@ int Stream::getW() {
   return w;
 }
 
-
 long Stream::getL() {
   return l;
 }

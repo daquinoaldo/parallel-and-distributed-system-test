@@ -25,7 +25,7 @@ public:
   }
 
   T get(unsigned long i) {
-    T item(std::move(deque[size() - 1 - i]));
+    T item(deque[size() - 1 - i]);
     return item;
   }
 

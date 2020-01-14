@@ -5,7 +5,7 @@ Timer::Timer(std::string message) : message(std::move(message)) {
 }
 
 Timer::~Timer() {
-  std::cout << "[Timer] " + message + " computed in " + std::to_string(getTime()) + " usec" + "\n";
+  std::cout << "[Timer]\t\t" + message + " computed in " + std::to_string(getTime()) + " usec" + "\n";
 }
 
 long Timer::getTime() {
