@@ -8,7 +8,7 @@
 #include "Workers.hpp"
 #include "Timer.hpp"
 
-long sequential(unsigned int seed, int w, int t, int k, long l) {
+long sequential(unsigned int seed, int w, int t, int k, long l, bool verbose) {
   // timer
   Timer timer("Sequential");
 
@@ -17,19 +17,19 @@ long sequential(unsigned int seed, int w, int t, int k, long l) {
   auto outputStream = new Queue<std::pair<int, Skyline>>;
 
   // generate input stream
-  Workers::generate(inputStream);
+  Workers::generate(inputStream, verbose);
 
   // pick a window, calculate skyline, put it in output stream
-  Workers::work(inputStream, outputStream);
+  Workers::work(inputStream, outputStream, verbose);
 
   // print the output stream
-  Workers::print(outputStream);
+  Workers::print(outputStream, verbose);
 
   // return time spent for autopilot
   return timer.getTime();
 }
 
-long parallel(unsigned int seed, int w, int t, int k, long l, int nw) {
+long parallel(unsigned int seed, int w, int t, int k, long l, bool verbose, int nw) {
   // timer
   Timer timer("Parallel");
 
@@ -38,17 +38,17 @@ long parallel(unsigned int seed, int w, int t, int k, long l, int nw) {
   auto outputStream = new SecureQueue<std::pair<int, Skyline>>;
 
   // generate input stream
-  std::thread streamGenerator(Workers::secureGenerate, inputStream);
+  std::thread streamGenerator(Workers::secureGenerate, inputStream, verbose);
 
   // workers
   Queue<std::thread *> threads;
   for (int i = 0; i < nw; i++) {
-    auto worker = new std::thread(Workers::secureWork, inputStream, outputStream, i);
+    auto worker = new std::thread(Workers::secureWork, inputStream, outputStream, i, verbose);
     threads.push(worker);
   }
 
   // print the output stream
-  std::thread outputPrinter(Workers::securePrint, outputStream);
+  std::thread outputPrinter(Workers::securePrint, outputStream, verbose);
 
   // join threads
   streamGenerator.join();
@@ -64,15 +64,16 @@ long parallel(unsigned int seed, int w, int t, int k, long l, int nw) {
 void autopilot() {
   // parameters
   unsigned int seed = 42;
-  int w = 30;
-  int t = 3;
-  int k = 1;
-  long l = 10000;
+  int w = 50;       // window size
+  int t = 10;       // tuple size
+  int k = 1;        // sliding factor
+  long l = 10000;   // stream length: 10.000
+  bool v = false;   // verbose
   int nw = 4;
 
   // run and save times
-  long seq = sequential(seed, w, t, k, l);
-  long par = parallel(seed, w, t, k, l, nw);
+  long seq = sequential(seed, w, t, k, l, v);
+  long par = parallel(seed, w, t, k, l, v, nw);
 
   // report
   std::cout << std::endl;
@@ -90,6 +91,7 @@ void help() {
   std::cout << "t = tuple size" << std::endl;
   std::cout << "k = shift factor" << std::endl;
   std::cout << "l = stream length" << std::endl;
+  std::cout << "v = verbose (0 to suppress print, 1 to show)" << std::endl;
   std::cout << "nw = number of worker, optional, empty or 0 for sequential execution" << std::endl;
   std::cout << std::endl;
   std::cout << "Auto usage: skyline auto" << std::endl;
@@ -115,29 +117,29 @@ int main(int argc, char *argv[]) {
   }
 
   // wrong args: help message
-  if (argc != 6 && argc != 7) {
+  if (argc != 7 && argc != 8) {
     help();    // show the help message
     return 1;  // return error code
   }
 
   // standard arguments
   auto seed = (unsigned int) atoi(argv[1]);
-  auto w = atoi(argv[2]);
-  auto t = atoi(argv[3]);
-  auto k = atoi(argv[4]);
-  auto l = atol(argv[5]);
-  auto nw = argc == 7 ? atoi(argv[6]) : 0;
+  auto w = atoi(argv[2]);  // window size
+  auto t = atoi(argv[3]);  // tuple size
+  auto k = atoi(argv[4]);  // sliding factor
+  auto l = atoi(argv[5]);  // stream length
+  bool v = atoi(argv[6]);  // verbose
+  auto nw = argc == 8 ? atoi(argv[7]) : 0;
 
-  std::cout << "[Main]\tExpected windows: " << ceil(((double) (l - w)) / k) + 1 << std::endl;
+  std::cout << "[Main]\tExpected windows: " << ceil(((double) (l - w)) / k) + 1 << std::endl << std::endl;
 
   // run with nw for parallel, without nw for sequential
-  if (nw > 0) parallel(seed, w, t, k, l, nw);
-  else sequential(seed, w, t, k, l);
+  if (nw > 0) parallel(seed, w, t, k, l, v, nw);
+  else sequential(seed, w, t, k, l, v);
 
 }
 
 // TODO: doesn't scale
-// TODO: segmentation fault
 // seq    44171
 // par1   34368
 // par2   30226

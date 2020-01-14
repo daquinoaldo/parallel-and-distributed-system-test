@@ -34,7 +34,14 @@ public:
     return queue.pop();
   }
 
+  bool getEOQ() {
+    // TODO: use another mutex and differentiate read/write lock
+    std::unique_lock<std::mutex> lock(mutex);
+    return EOQ;
+  }
+
   void setEOQ() {
+    // TODO: use another mutex
     std::unique_lock<std::mutex> lock(mutex);
     EOQ = true;
   }

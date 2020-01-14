@@ -10,17 +10,18 @@
 class Workers {
 
 public:
-  static void generate(Stream *stream);
+  static void generate(Stream *stream, bool verbose);
 
-  static void secureGenerate(SecureStream *stream);
+  static void secureGenerate(SecureStream *stream, bool verbose);
 
-  static void work(Stream *inputStream, Queue<std::pair<int, Skyline>> *outputStream);
+  static void work(Stream *inputStream, Queue<std::pair<int, Skyline>> *outputStream, bool verbose);
 
-  static void secureWork(SecureStream *inputStream, SecureQueue<std::pair<int, Skyline>> *outputStream, int wid);
+  static void secureWork(SecureStream *inputStream, SecureQueue<std::pair<int, Skyline>> *outputStream,
+    int wid, bool verbose);
 
-  static void print(Queue<std::pair<int, Skyline>> *outputStream);
+  static void print(Queue<std::pair<int, Skyline>> *outputStream, bool verbose);
 
-  static void securePrint(SecureQueue<std::pair<int, Skyline>> *outputStream);
+  static void securePrint(SecureQueue<std::pair<int, Skyline>> *outputStream, bool verbose);
 
 };
 

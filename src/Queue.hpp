@@ -15,11 +15,13 @@ public:
   Queue() = default;
 
   void push(T const &item) {
-    deque.push_front(std::move(item));
+    deque.push_front(item);
   }
 
   T pop() {
-    T item(std::move(deque.back()));
+    //if (deque.size() == 0)
+    //  return T();
+    T item(deque.back());
     deque.pop_back();
     return item;
   }
@@ -31,6 +33,10 @@ public:
 
   unsigned long size() {
     return deque.size();
+  }
+
+  bool empty() {
+    return deque.size() > 0;
   }
 
 };
