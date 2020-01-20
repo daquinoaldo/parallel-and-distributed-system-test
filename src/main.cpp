@@ -5,7 +5,7 @@
 #include "Utils.hpp"
 #include "SecureStream.hpp"
 #include "SecureQueue.hpp"
-#include "Workers.hpp"
+#include "Task.hpp"
 #include "Timer.hpp"
 
 long sequential(unsigned int seed, int w, int t, int k, long l, bool verbose) {
@@ -17,13 +17,13 @@ long sequential(unsigned int seed, int w, int t, int k, long l, bool verbose) {
   auto outputStream = new Queue<std::pair<int, Skyline>>;
 
   // generate input stream
-  Workers::generate(inputStream, verbose);
+  Task::emitter(inputStream, verbose);
 
   // pick a window, calculate skyline, put it in output stream
-  Workers::work(inputStream, outputStream, verbose);
+  Task::worker(inputStream, outputStream, verbose);
 
   // print the output stream
-  Workers::print(outputStream, verbose);
+  Task::collector(outputStream, verbose);
 
   // return time spent for autopilot
   return timer.getTime();
@@ -38,17 +38,17 @@ long parallel(unsigned int seed, int w, int t, int k, long l, bool verbose, int 
   auto outputStream = new SecureQueue<std::pair<int, Skyline>>;
 
   // generate input stream
-  std::thread streamGenerator(Workers::secureGenerate, inputStream, verbose);
+  std::thread streamGenerator(Task::secureEmitter, inputStream, verbose);
 
   // workers
   Queue<std::thread *> threads;
   for (int i = 0; i < nw; i++) {
-    auto worker = new std::thread(Workers::secureWork, inputStream, outputStream, i, verbose);
+    auto worker = new std::thread(Task::secureWorker, inputStream, outputStream, i, verbose);
     threads.push(worker);
   }
 
   // print the output stream
-  std::thread outputPrinter(Workers::securePrint, outputStream, verbose);
+  std::thread outputPrinter(Task::secureCollector, outputStream, verbose);
 
   // join threads
   streamGenerator.join();
@@ -64,7 +64,7 @@ long parallel(unsigned int seed, int w, int t, int k, long l, bool verbose, int 
 void autopilot() {
   // parameters
   unsigned int seed = 42;
-  int w = 50;       // window size
+  int w = 100;       // window size
   int t = 10;       // tuple size
   int k = 1;        // sliding factor
   long l = 100000;  // stream length: 100.000

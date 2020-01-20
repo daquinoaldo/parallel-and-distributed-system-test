@@ -1,22 +1,26 @@
-#include "Workers.hpp"
+#include "Task.hpp"
+#include "Timer.hpp"
 
-void Workers::generate(Stream *stream, bool verbose) {
+unsigned long Task::emitter(Stream *stream, bool verbose) {
+  Timer timer("Emitter");
   auto l = stream->getL();
   auto t = stream->getT();
   for (long i = 0; i < l; i++) {
     auto tuple = Utils::newTuple(t);
     stream->push(tuple);
     if (verbose)
-      std::cout << "[Generator]\tTuple " + std::to_string(i) + ":\t" + Utils::serializeTuple(tuple) + "\n";
+      std::cout << "[Emitter]\tTuple " + std::to_string(i) + ":\t" + Utils::serializeTuple(tuple) + "\n";
   }
+  return timer.getTime();
 }
 
-void Workers::secureGenerate(SecureStream *stream, bool verbose) {
-  generate(stream, verbose);
+unsigned long Task::secureEmitter(SecureStream *stream, bool verbose) {
+  emitter(stream, verbose);
   stream->setEOS();
 }
 
-void Workers::work(Stream *inputStream, Queue<std::pair<int, Skyline>> *outputStream, bool verbose) {
+unsigned long Task::worker(Stream *inputStream, Queue<std::pair<int, Skyline>> *outputStream, bool verbose) {
+  Timer timer("Worker");
   int wIndex;
   Window window;
   std::tie(wIndex, window) = inputStream->getWindow();
@@ -29,10 +33,12 @@ void Workers::work(Stream *inputStream, Queue<std::pair<int, Skyline>> *outputSt
     outputStream->push(std::pair(wIndex, skyline));
     std::tie(wIndex, window) = inputStream->getWindow();
   }
+  return timer.getTime();
 }
 
-void Workers::secureWork(SecureStream *inputStream, SecureQueue<std::pair<int, Skyline>> *outputStream,
+unsigned long Task::secureWorker(SecureStream *inputStream, SecureQueue<std::pair<int, Skyline>> *outputStream,
     int wid, bool verbose) {
+  Timer timer("Worker");
   int wIndex;
   Window window;
   std::tie(wIndex, window) = inputStream->getWindow();
@@ -48,28 +54,32 @@ void Workers::secureWork(SecureStream *inputStream, SecureQueue<std::pair<int, S
     std::tie(wIndex, window) = inputStream->getWindow();
   }
   outputStream->setEOQ();
-
+  return timer.getTime();
 }
 
-void Workers::print(Queue<std::pair<int, Skyline>> *outputStream, bool verbose) {
+unsigned long Task::collector(Queue<std::pair<int, Skyline>> *outputStream, bool verbose) {
+  Timer timer("Collector");
   int sIndex;
   Skyline skyline;
   std::tie(sIndex, skyline) = outputStream->pop();
   while (!outputStream->empty()) {
     if (verbose)
-      std::cout << "[Printer]\tSkyline " + std::to_string(sIndex) + ":\t" + Utils::serializeWindow(skyline) + "\n";
+      std::cout << "[Collector]\tSkyline " + std::to_string(sIndex) + ":\t" + Utils::serializeWindow(skyline) + "\n";
     std::tie(sIndex, skyline) = outputStream->pop();
   }
+  return timer.getTime();
 }
 
-void Workers::securePrint(SecureQueue<std::pair<int, Skyline>> *outputStream, bool verbose) {
+unsigned long Task::secureCollector(SecureQueue<std::pair<int, Skyline>> *outputStream, bool verbose) {
+  Timer timer("Collector");
   int sIndex;
   Skyline skyline;
   std::tie(sIndex, skyline) = outputStream->pop();
   while (!outputStream->getEOQ()) {
     if (verbose)
-      std::cout << "[Printer]\tSkyline " + std::to_string(sIndex) + ":\t" + Utils::serializeWindow(skyline) + "\n";
+      std::cout << "[Collector]\tSkyline " + std::to_string(sIndex) + ":\t" + Utils::serializeWindow(skyline) + "\n";
     std::tie(sIndex, skyline) = outputStream->pop();
   }
+  return timer.getTime();
 }
 
