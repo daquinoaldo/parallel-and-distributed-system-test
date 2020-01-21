@@ -4,10 +4,7 @@
 Tuple Utils::newTuple(int t) {
   Tuple tuple((unsigned long) t);
   for (int i = 0; i < t; i++) {
-    auto r = rand(); // NOLINT(cert-msc30-c,cert-msc50-cpp)
-#ifdef DEBUG
-    r = r % 100;
-#endif
+    auto r = rand() % 100;
     tuple[(unsigned long) i] = r;
   }
   return tuple;
