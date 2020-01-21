@@ -64,6 +64,37 @@ long parallel(unsigned int seed, int w, int t, int k, long l, bool verbose, int 
 }
 
 
+long semiparallel(unsigned int seed, int w, int t, int k, long l, bool verbose, int nw) {
+  // timer
+  Timer timer("Parallel");
+
+  // data structures
+  auto inputStream = new SecureStream(t, w, k, l, seed);
+  auto outputStream = new SecureQueue<std::pair<int, Skyline>>;
+
+  // generate input stream before starting workers
+  Task::secureEmitter(inputStream, verbose);
+
+  // workers
+  Queue<std::thread *> threads;
+  for (int i = 0; i < nw; i++) {
+    auto worker = new std::thread(Task::secureWorker, inputStream, outputStream, i, verbose);
+    threads.push(worker);
+  }
+
+  // join threads
+  inputStream->awakeAll();
+  for (int i = 0; i < nw; i++)
+    threads.pop()->join();
+
+  // print the output stream after the workers have finished
+  Task::secureCollector(outputStream, verbose);
+
+  // return time spent for autopilot
+  return timer.getTime();
+}
+
+
 void autopilot() {
   // parameters
   int seed = 42;
@@ -79,6 +110,9 @@ void autopilot() {
     concurentThreadsSupported = 128;
   std::cout << "AUTOPILOT: skyline " << seed << w << " " << t << " " << k << " " << l << " " << v <<
     " " << concurentThreadsSupported << std::endl;
+  
+  std::cout << "[AUTOPILOT]\tExpected windows: " << ceil(((double) (l - w)) / k) + 1 << std::endl << std::endl;
+
 
   unsigned limit = floor(log2(concurentThreadsSupported));
 
@@ -94,6 +128,14 @@ void autopilot() {
     parallelTimes[i] = parallel(seed, w, t, k, l, v, nw);
   }
 
+  // run semiparallel
+  long semiparallelTimes[limit] = {};
+  for (int i = 0; i <= limit; i++) {
+    unsigned nw = pow (2, i);
+    std::cout << std::endl << "Semi-parallel with  " << nw << " threads."<< std::endl;
+    semiparallelTimes[i] = parallel(seed, w, t, k, l, v, nw);
+  }
+
   // report
   std::cout << std::endl;
   std::cout << "AUTOPILOT REPORT" << std::endl;
@@ -101,6 +143,10 @@ void autopilot() {
   for (int i = 0; i <= limit; i++) {
     unsigned nw = pow (2, i);
     std::cout << "Parallel " << nw << " threads:\t" << parallelTimes[i] << std::endl;
+  }
+  for (int i = 0; i <= limit; i++) {
+    unsigned nw = pow (2, i);
+    std::cout << "Semi-parallel " << nw << " threads:\t" << semiparallelTimes[i] << std::endl;
   }
   std::cout << std::endl;
 }
@@ -160,3 +206,6 @@ int main(int argc, char *argv[]) {
   else sequential(seed, w, t, k, l, v);
 
 }
+
+// TODO: semi-parallel doesn't scale. The problem is not the emitter but the locks.
+// Try to use a queue of task for each worker and an emitter and a collector.
