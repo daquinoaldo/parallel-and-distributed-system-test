@@ -15,6 +15,11 @@ else ()
 endif ()
 
 # Debug flags
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG -O3")
+
+if(NOT CMAKE_BUILD_TYPE)	
+  set(CMAKE_BUILD_TYPE Release)	
+endif()	
+set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 add_executable(skyline src/main.cpp src/Utils.cpp src/Utils.hpp src/Stream.cpp src/Stream.hpp src/SecureQueue.hpp src/types.hpp src/SecureStream.cpp src/SecureStream.hpp src/Task.cpp src/Task.hpp src/Timer.cpp src/Timer.hpp)

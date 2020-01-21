@@ -19,8 +19,8 @@ public:
   }
 
   T pop() {
-    //if (deque.size() == 0)
-    //  return T();
+    if (deque.size() == 0)
+      return T();
     T item(deque.back());
     deque.pop_back();
     return item;
@@ -36,7 +36,7 @@ public:
   }
 
   bool empty() {
-    return deque.size() > 0;
+    return deque.size() == 0;
   }
 
 };

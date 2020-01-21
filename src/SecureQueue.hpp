@@ -40,10 +40,18 @@ public:
     return EOQ;
   }
 
+  bool empty() {
+    std::unique_lock<std::mutex> lock(mutex);
+    return queue.empty() && EOQ;
+  }
+
   void setEOQ() {
     // TODO: use another mutex
-    std::unique_lock<std::mutex> lock(mutex);
-    EOQ = true;
+    {
+      std::unique_lock<std::mutex> lock(mutex);
+      EOQ = true;
+    }
+    condition.notify_all();
   }
 
   unsigned long size() {

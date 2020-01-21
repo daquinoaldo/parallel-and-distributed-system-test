@@ -81,7 +81,7 @@ unsigned long Task::secureCollector(SecureQueue<std::pair<int, Skyline>> *output
   int sIndex;
   Skyline skyline;
   std::tie(sIndex, skyline) = outputStream->pop();
-  while (!outputStream->getEOQ()) {
+  while (!outputStream->empty() || !skyline.empty()) {
     if (verbose)
       std::cout << "[Collector]\tSkyline " + std::to_string(sIndex) + ":\t" + Utils::serializeWindow(skyline) + "\n";
     std::tie(sIndex, skyline) = outputStream->pop();
