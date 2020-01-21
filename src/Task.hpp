@@ -9,6 +9,9 @@
 
 class Task {
 
+private :
+  static void _emitter(Stream *stream, bool verbose);
+
 public:
   static unsigned long emitter(Stream *stream, bool verbose);
 

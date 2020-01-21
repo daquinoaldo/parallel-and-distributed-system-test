@@ -1,8 +1,7 @@
 #include "Task.hpp"
 #include "Timer.hpp"
 
-unsigned long Task::emitter(Stream *stream, bool verbose) {
-  Timer timer("Emitter");
+void Task::_emitter(Stream *stream, bool verbose) {
   auto l = stream->getL();
   auto t = stream->getT();
   for (long i = 0; i < l; i++) {
@@ -11,12 +10,19 @@ unsigned long Task::emitter(Stream *stream, bool verbose) {
     if (verbose)
       std::cout << "[Emitter]\tTuple " + std::to_string(i) + ":\t" + Utils::serializeTuple(tuple) + "\n";
   }
+}
+
+unsigned long Task::emitter(Stream *stream, bool verbose) {
+  Timer timer("Emitter");
+  _emitter(stream, verbose);
   return timer.getTime();
 }
 
 unsigned long Task::secureEmitter(SecureStream *stream, bool verbose) {
-  emitter(stream, verbose);
+  Timer timer("SecureEmitter");
+  _emitter(stream, verbose);
   stream->setEOS();
+  return timer.getTime();
 }
 
 unsigned long Task::worker(Stream *inputStream, Queue<std::pair<int, Skyline>> *outputStream, bool verbose) {
@@ -38,7 +44,7 @@ unsigned long Task::worker(Stream *inputStream, Queue<std::pair<int, Skyline>> *
 
 unsigned long Task::secureWorker(SecureStream *inputStream, SecureQueue<std::pair<int, Skyline>> *outputStream,
     int wid, bool verbose) {
-  Timer timer("Worker");
+  Timer timer("SecureWorker" + std::to_string(wid));
   int wIndex;
   Window window;
   std::tie(wIndex, window) = inputStream->getWindow();
@@ -71,7 +77,7 @@ unsigned long Task::collector(Queue<std::pair<int, Skyline>> *outputStream, bool
 }
 
 unsigned long Task::secureCollector(SecureQueue<std::pair<int, Skyline>> *outputStream, bool verbose) {
-  Timer timer("Collector");
+  Timer timer("SecureCollector");
   int sIndex;
   Skyline skyline;
   std::tie(sIndex, skyline) = outputStream->pop();

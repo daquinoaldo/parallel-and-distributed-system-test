@@ -8,6 +8,7 @@
 #include "Task.hpp"
 #include "Timer.hpp"
 
+
 long sequential(unsigned int seed, int w, int t, int k, long l, bool verbose) {
   // timer
   Timer timer("Sequential");
@@ -28,6 +29,7 @@ long sequential(unsigned int seed, int w, int t, int k, long l, bool verbose) {
   // return time spent for autopilot
   return timer.getTime();
 }
+
 
 long parallel(unsigned int seed, int w, int t, int k, long l, bool verbose, int nw) {
   // timer
@@ -52,7 +54,7 @@ long parallel(unsigned int seed, int w, int t, int k, long l, bool verbose, int 
 
   // join threads
   streamGenerator.join();
-  inputStream->awakeAll();  // awake threads waiting for a window  // TODO: this may be too early -> maybe not, after EOS they will terminate
+  inputStream->awakeAll();
   for (int i = 0; i < nw; i++)
     threads.pop()->join();
   outputPrinter.join();
@@ -61,32 +63,35 @@ long parallel(unsigned int seed, int w, int t, int k, long l, bool verbose, int 
   return timer.getTime();
 }
 
+
 void autopilot() {
   // parameters
-  unsigned int seed = 42;
+  int seed = 42;
   int w = 100;       // window size
   int t = 10;       // tuple size
   int k = 1;        // sliding factor
-  long l = 100000;  // stream length: 100.000
+  long l = 10000;   // stream length: 10.000
   bool v = false;   // verbose
 
     // compute number of threads
   unsigned concurentThreadsSupported = std::thread::hardware_concurrency();
   if (concurentThreadsSupported <= 0) // not able to detect
     concurentThreadsSupported = 128;
-  std::cout << "AUTOPILOT: skyline " << w << " " << t << " " << k << " " << l << " " << v <<
+  std::cout << "AUTOPILOT: skyline " << seed << w << " " << t << " " << k << " " << l << " " << v <<
     " " << concurentThreadsSupported << std::endl;
 
   unsigned limit = floor(log2(concurentThreadsSupported));
-  long times[limit] = {};
 
   // run sequential
+  std::cout << std::endl << "Sequential."<< std::endl;
   long seq = sequential(seed, w, t, k, l, v);
 
   // run parallel
+  long parallelTimes[limit] = {};
   for (int i = 0; i <= limit; i++) {
     unsigned nw = pow (2, i);
-    times[i] = parallel(seed, w, t, k, l, v, nw);
+    std::cout << std::endl << "Parallel with  " << nw << " threads."<< std::endl;
+    parallelTimes[i] = parallel(seed, w, t, k, l, v, nw);
   }
 
   // report
@@ -95,7 +100,7 @@ void autopilot() {
   std::cout << "Sequential:\t\t" << seq << std::endl;
   for (int i = 0; i <= limit; i++) {
     unsigned nw = pow (2, i);
-    std::cout << "Parallel " << nw << " threads:\t" << times[i] << std::endl;
+    std::cout << "Parallel " << nw << " threads:\t" << parallelTimes[i] << std::endl;
   }
   std::cout << std::endl;
 }
@@ -155,13 +160,3 @@ int main(int argc, char *argv[]) {
   else sequential(seed, w, t, k, l, v);
 
 }
-
-// TODO: doesn't scale
-// seq    44171
-// par1   34368
-// par2   30226
-// par3   34774
-// par4   36809
-// par5   34631
-// par64  36585
-// par128 46547
