@@ -293,4 +293,5 @@ int main(int argc, char *argv[]) {
 
 }
 
-// TODO: Still not scale.
+// TODO: Still not scale. Try to figure out why with a profiler.
+// Try also to push more than one window per thread at time.
