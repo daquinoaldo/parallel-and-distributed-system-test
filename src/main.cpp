@@ -95,13 +95,62 @@ long semiparallel(unsigned seed, unsigned w, unsigned t, unsigned k, unsigned lo
 }
 
 
-void autopilot() {
+long emitterCollector(unsigned seed, unsigned w, unsigned t, unsigned k, unsigned long l, bool verbose, unsigned nw) {
+  // timer
+  Timer timer("EmitterCollector");
+
+  // data structures
+  auto inputStream = new SecureStream(t, w, k, l, seed);
+  auto outputStream = new SecureQueue<std::pair<int, Skyline>>;
+  auto inputQueues = new std::vector<WorkerQueue*>(nw);
+  for (unsigned i = 0; i < nw; i++) {
+    inputQueues->at(i) = new WorkerQueue();
+  }
+  auto outputQueues = new std::vector<WorkerQueue*>(nw);
+  for (unsigned i = 0; i < nw; i++) {
+    outputQueues->at(i) = new WorkerQueue();
+  }
+
+  // generate input stream
+  std::thread streamGenerator(Task::secureGenerator, inputStream, verbose);
+
+  // emitter
+  std::thread emitter(Task::secureEmitter, inputStream, inputQueues, verbose);
+
+  // workers
+  Queue<std::thread *> threads;
+  for (unsigned i = 0; i < nw; i++) {
+    auto worker = new std::thread(Task::secureWorkerWithQueue, inputQueues->at(i), outputQueues->at(i), i, verbose);
+    threads.push(worker);
+  }
+
+  // collector
+  std::thread collector(Task::secureCollector, outputQueues, outputStream, verbose);
+
+  // print the output stream
+  std::thread outputPrinter(Task::securePrinter, outputStream, verbose);
+
+  // join threads
+  streamGenerator.join();
+  emitter.join();
+  inputStream->awakeAll();
+  for (unsigned i = 0; i < nw; i++)
+    threads.pop()->join();
+  collector.join();
+  outputPrinter.join();
+
+  // return time spent for autopilot
+  return timer.getTime();
+}
+
+
+void autopilot(std::string arg) {
   // parameters
   unsigned seed = 42;
   unsigned w = 100;         // window size
   unsigned t = 50;          // tuple size
   unsigned k = 1;           // sliding factor
-  unsigned long l = 100000; // stream length: 10.000
+  unsigned long l = 10000;  // stream length: 10.000
   bool v = false;           // verbose
 
     // compute number of threads
@@ -113,43 +162,79 @@ void autopilot() {
   
   std::cout << "[AUTOPILOT]\tExpected windows: " << ceil(((double) (l - w)) / k) + 1 << std::endl << std::endl;
 
-
+  unsigned long seq;
+  std::vector<unsigned long>* parallelTimes;
+  std::vector<unsigned long>* semiparallelTimes;
+  std::vector<unsigned long>* emitterCollectorTimes;
   unsigned limit = (unsigned) floor(log2(concurentThreadsSupported));
 
   // run sequential
-  std::cout << std::endl << "Sequential."<< std::endl;
-  long seq = sequential(seed, w, t, k, l, v);
+  if (arg == "" || arg == "sequential") {
+    std::cout << std::endl << "Sequential."<< std::endl;
+    seq = sequential(seed, w, t, k, l, v);
+  }
 
   // run parallel
-  std::vector<int> parallelTimes(limit);
-  for (unsigned i = 0; i <= limit; i++) {
-    unsigned nw = (unsigned) pow(2, i);
-    std::cout << std::endl << "Parallel with  " << nw << " threads."<< std::endl;
-    parallelTimes[i] = parallel(seed, w, t, k, l, v, nw);
+  if (arg == "" || arg == "parallel") {
+    parallelTimes = new std::vector<unsigned long>(limit + 1);
+    for (unsigned i = 0; i <= limit; i++) {
+      unsigned nw = (unsigned) pow(2, i);
+      std::cout << std::endl << "Parallel with " << nw << " threads."<< std::endl;
+      parallelTimes->at(i) = parallel(seed, w, t, k, l, v, nw);
+    }
   }
 
   // run semiparallel
-  std::vector<int> semiparallelTimes(limit);
-  for (unsigned i = 0; i <= limit; i++) {
-    unsigned nw = (unsigned) pow(2, i);
-    std::cout << std::endl << "Semi-parallel with  " << nw << " threads."<< std::endl;
-    semiparallelTimes[i] = semiparallel(seed, w, t, k, l, v, nw);
+  if (arg == "" || arg == "semiparallel") {
+    semiparallelTimes = new std::vector<unsigned long>(limit + 1);
+    for (unsigned i = 0; i <= limit; i++) {
+      unsigned nw = (unsigned) pow(2, i);
+      std::cout << std::endl << "Semi-parallel with " << nw << " threads."<< std::endl;
+      semiparallelTimes->at(i) = semiparallel(seed, w, t, k, l, v, nw);
+    }
+  }
+
+  // run emitter-collector
+  if (arg == "" || arg == "emitter-collector") {
+    emitterCollectorTimes = new std::vector<unsigned long>(limit + 1);
+    for (unsigned i = 0; i <= limit; i++) {
+      unsigned nw = (unsigned) pow(2, i);
+      std::cout << std::endl << "Emitter-collector with " << nw << " threads."<< std::endl;
+      emitterCollectorTimes->at(i) = emitterCollector(seed, w, t, k, l, v, nw);
+    }
   }
 
   // report
   std::cout << std::endl;
   std::cout << "AUTOPILOT REPORT" << std::endl;
-  std::cout << "Sequential:\t\t" << seq << std::endl;
-  for (unsigned i = 0; i <= limit; i++) {
-    unsigned nw = (unsigned) pow (2, i);
-    std::cout << "Parallel " << nw << " threads:\t" << parallelTimes[i] << std::endl;
+
+  if (arg == "" || arg == "sequential")
+    std::cout << "Sequential:\t\t" << seq << std::endl;
+
+  if (arg == "" || arg == "parallel") {
+    for (unsigned i = 0; i <= limit; i++) {
+      unsigned nw = (unsigned) pow (2, i);
+      std::cout << "Parallel " << nw << " threads:\t" << parallelTimes->at(i) << std::endl;
+    }
   }
-  for (unsigned i = 0; i <= limit; i++) {
-    unsigned nw = (unsigned) pow (2, i);
-    std::cout << "Semi-parallel " << nw << " threads:\t" << semiparallelTimes[i] << std::endl;
+
+  if (arg == "" || arg == "semiparallel") {
+    for (unsigned i = 0; i <= limit; i++) {
+      unsigned nw = (unsigned) pow (2, i);
+      std::cout << "Semi-parallel " << nw << " threads:\t" << semiparallelTimes->at(i) << std::endl;
+    }
   }
+
+  if (arg == "" || arg == "emitter-collector") {
+    for (unsigned i = 0; i <= limit; i++) {
+      unsigned nw = (unsigned) pow (2, i);
+      std::cout << "Emitter-collector " << nw << " threads:\t" << emitterCollectorTimes->at(i) << std::endl;
+    }
+  }
+
   std::cout << std::endl;
 }
+
 
 void help() {
   std::cout << std::endl;
@@ -174,8 +259,9 @@ int main(int argc, char *argv[]) {
 
   // auto mode arguments
   if (argc >= 2 && strcmp(argv[1], "auto") == 0) {
-    autopilot();  // run the autopilot
-    return 0;     // stop execution of standard workflow
+    auto mode = argc >= 3 ? argv[2] : "";
+    autopilot(mode);  // run the autopilot
+    return 0;         // stop execution of standard workflow
   }
 
   // help message
@@ -207,5 +293,4 @@ int main(int argc, char *argv[]) {
 
 }
 
-// TODO: semi-parallel doesn't scale. The problem is not the emitter but the locks.
-// Try to use a queue of task for each worker and an emitter and a collector.
+// TODO: Still not scale.

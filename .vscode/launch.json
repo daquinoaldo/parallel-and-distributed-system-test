@@ -23,6 +23,27 @@
       "miDebuggerPath": "/usr/bin/gdb"
     },
     {
+      "name": "debug emitter-collector",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/skyline-debug",
+      "args": ["auto emitter-collector"],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ],
+      "preLaunchTask": "make-debug",
+      "miDebuggerPath": "/usr/bin/gdb"
+    },
+    {
       "name": "debug auto",
       "type": "cppdbg",
       "request": "launch",
