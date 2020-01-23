@@ -1,6 +1,6 @@
 #include "Stream.hpp"
 
-Stream::Stream(int t, int w, int k, long l, unsigned int seed) : t(t), w(w), k(k), l(l) {
+Stream::Stream(unsigned _t, unsigned _w, unsigned _k, unsigned long _l, unsigned seed) : t(_t), w(_w), k(_k), l(_l) {
   srand(seed);
 }
 

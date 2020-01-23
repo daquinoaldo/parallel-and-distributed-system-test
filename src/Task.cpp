@@ -1,7 +1,7 @@
 #include "Task.hpp"
 #include "Timer.hpp"
 
-void Task::_emitter(Stream *stream, bool verbose) {
+void Task::_generator(Stream *stream, bool verbose) {
   auto l = stream->getL();
   auto t = stream->getT();
   for (long i = 0; i < l; i++) {
@@ -12,15 +12,15 @@ void Task::_emitter(Stream *stream, bool verbose) {
   }
 }
 
-unsigned long Task::emitter(Stream *stream, bool verbose) {
+unsigned long Task::generator(Stream *stream, bool verbose) {
   Timer timer("Emitter");
-  _emitter(stream, verbose);
+  _generator(stream, verbose);
   return timer.getTime();
 }
 
-unsigned long Task::secureEmitter(SecureStream *stream, bool verbose) {
+unsigned long Task::secureGenerator(SecureStream *stream, bool verbose) {
   Timer timer("SecureEmitter");
-  _emitter(stream, verbose);
+  _generator(stream, verbose);
   stream->setEOS();
   return timer.getTime();
 }
@@ -63,7 +63,7 @@ unsigned long Task::secureWorker(SecureStream *inputStream, SecureQueue<std::pai
   return timer.getTime();
 }
 
-unsigned long Task::collector(Queue<std::pair<int, Skyline>> *outputStream, bool verbose) {
+unsigned long Task::printer(Queue<std::pair<int, Skyline>> *outputStream, bool verbose) {
   Timer timer("Collector");
   int sIndex;
   Skyline skyline;
@@ -76,7 +76,7 @@ unsigned long Task::collector(Queue<std::pair<int, Skyline>> *outputStream, bool
   return timer.getTime();
 }
 
-unsigned long Task::secureCollector(SecureQueue<std::pair<int, Skyline>> *outputStream, bool verbose) {
+unsigned long Task::securePrinter(SecureQueue<std::pair<int, Skyline>> *outputStream, bool verbose) {
   Timer timer("SecureCollector");
   int sIndex;
   Skyline skyline;

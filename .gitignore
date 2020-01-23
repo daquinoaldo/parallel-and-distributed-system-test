@@ -24,8 +24,7 @@
 *.app
 
 # Make, CMake & binaries
-cmake-build-debug
-cmake-build
+*build*
 skyline-debug
 skyline
 

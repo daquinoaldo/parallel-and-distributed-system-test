@@ -19,7 +19,7 @@ private:
   Tuple get(unsigned long i);
 
 public:
-  Stream(int t, int w, int k, long l, unsigned int seed);
+  Stream(unsigned t, unsigned w, unsigned k, unsigned long l, unsigned seed);
 
   virtual void push(const Tuple &item);
 

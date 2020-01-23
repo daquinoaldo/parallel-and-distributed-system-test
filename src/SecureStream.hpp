@@ -6,7 +6,7 @@
 #include <condition_variable>
 #include "Stream.hpp"
 
-class SecureStream : public Stream {
+class SecureStream final : public Stream {
 
 private:
   std::mutex mutex;
@@ -14,7 +14,7 @@ private:
   bool EOS = false;
 
 public:
-  SecureStream(int t, int w, int k, long l, unsigned int seed);
+  SecureStream(unsigned t, unsigned w, unsigned k, unsigned long l, unsigned seed);
 
   void push(const Tuple &item) override;
 

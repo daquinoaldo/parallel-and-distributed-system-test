@@ -9,7 +9,7 @@
 #include "Timer.hpp"
 
 
-long sequential(unsigned int seed, int w, int t, int k, long l, bool verbose) {
+long sequential(unsigned seed, unsigned w, unsigned t, unsigned k, unsigned long l, bool verbose) {
   // timer
   Timer timer("Sequential");
 
@@ -18,20 +18,20 @@ long sequential(unsigned int seed, int w, int t, int k, long l, bool verbose) {
   auto outputStream = new Queue<std::pair<int, Skyline>>;
 
   // generate input stream
-  Task::emitter(inputStream, verbose);
+  Task::generator(inputStream, verbose);
 
   // pick a window, calculate skyline, put it in output stream
   Task::worker(inputStream, outputStream, verbose);
 
   // print the output stream
-  Task::collector(outputStream, verbose);
+  Task::printer(outputStream, verbose);
 
   // return time spent for autopilot
   return timer.getTime();
 }
 
 
-long parallel(unsigned int seed, int w, int t, int k, long l, bool verbose, int nw) {
+long parallel(unsigned seed, unsigned w, unsigned t, unsigned k, unsigned long l, bool verbose, unsigned nw) {
   // timer
   Timer timer("Parallel");
 
@@ -40,22 +40,22 @@ long parallel(unsigned int seed, int w, int t, int k, long l, bool verbose, int 
   auto outputStream = new SecureQueue<std::pair<int, Skyline>>;
 
   // generate input stream
-  std::thread streamGenerator(Task::secureEmitter, inputStream, verbose);
+  std::thread streamGenerator(Task::secureGenerator, inputStream, verbose);
 
   // workers
   Queue<std::thread *> threads;
-  for (int i = 0; i < nw; i++) {
+  for (unsigned i = 0; i < nw; i++) {
     auto worker = new std::thread(Task::secureWorker, inputStream, outputStream, i, verbose);
     threads.push(worker);
   }
 
   // print the output stream
-  std::thread outputPrinter(Task::secureCollector, outputStream, verbose);
+  std::thread outputPrinter(Task::securePrinter, outputStream, verbose);
 
   // join threads
   streamGenerator.join();
   inputStream->awakeAll();
-  for (int i = 0; i < nw; i++)
+  for (unsigned i = 0; i < nw; i++)
     threads.pop()->join();
   outputPrinter.join();
 
@@ -64,7 +64,7 @@ long parallel(unsigned int seed, int w, int t, int k, long l, bool verbose, int 
 }
 
 
-long semiparallel(unsigned int seed, int w, int t, int k, long l, bool verbose, int nw) {
+long semiparallel(unsigned seed, unsigned w, unsigned t, unsigned k, unsigned long l, bool verbose, unsigned nw) {
   // timer
   Timer timer("Parallel");
 
@@ -73,22 +73,22 @@ long semiparallel(unsigned int seed, int w, int t, int k, long l, bool verbose, 
   auto outputStream = new SecureQueue<std::pair<int, Skyline>>;
 
   // generate input stream before starting workers
-  Task::secureEmitter(inputStream, verbose);
+  Task::secureGenerator(inputStream, verbose);
 
   // workers
   Queue<std::thread *> threads;
-  for (int i = 0; i < nw; i++) {
+  for (unsigned i = 0; i < nw; i++) {
     auto worker = new std::thread(Task::secureWorker, inputStream, outputStream, i, verbose);
     threads.push(worker);
   }
 
   // join threads
   inputStream->awakeAll();
-  for (int i = 0; i < nw; i++)
+  for (unsigned i = 0; i < nw; i++)
     threads.pop()->join();
 
   // print the output stream after the workers have finished
-  Task::secureCollector(outputStream, verbose);
+  Task::securePrinter(outputStream, verbose);
 
   // return time spent for autopilot
   return timer.getTime();
@@ -97,12 +97,12 @@ long semiparallel(unsigned int seed, int w, int t, int k, long l, bool verbose, 
 
 void autopilot() {
   // parameters
-  int seed = 42;
-  int w = 100;       // window size
-  int t = 10;       // tuple size
-  int k = 1;        // sliding factor
-  long l = 10000;   // stream length: 10.000
-  bool v = false;   // verbose
+  unsigned seed = 42;
+  unsigned w = 100;         // window size
+  unsigned t = 50;          // tuple size
+  unsigned k = 1;           // sliding factor
+  unsigned long l = 100000; // stream length: 10.000
+  bool v = false;           // verbose
 
     // compute number of threads
   unsigned concurentThreadsSupported = std::thread::hardware_concurrency();
@@ -114,38 +114,38 @@ void autopilot() {
   std::cout << "[AUTOPILOT]\tExpected windows: " << ceil(((double) (l - w)) / k) + 1 << std::endl << std::endl;
 
 
-  unsigned limit = floor(log2(concurentThreadsSupported));
+  unsigned limit = (unsigned) floor(log2(concurentThreadsSupported));
 
   // run sequential
   std::cout << std::endl << "Sequential."<< std::endl;
   long seq = sequential(seed, w, t, k, l, v);
 
   // run parallel
-  long parallelTimes[limit] = {};
-  for (int i = 0; i <= limit; i++) {
-    unsigned nw = pow (2, i);
+  std::vector<int> parallelTimes(limit);
+  for (unsigned i = 0; i <= limit; i++) {
+    unsigned nw = (unsigned) pow(2, i);
     std::cout << std::endl << "Parallel with  " << nw << " threads."<< std::endl;
     parallelTimes[i] = parallel(seed, w, t, k, l, v, nw);
   }
 
   // run semiparallel
-  long semiparallelTimes[limit] = {};
-  for (int i = 0; i <= limit; i++) {
-    unsigned nw = pow (2, i);
+  std::vector<int> semiparallelTimes(limit);
+  for (unsigned i = 0; i <= limit; i++) {
+    unsigned nw = (unsigned) pow(2, i);
     std::cout << std::endl << "Semi-parallel with  " << nw << " threads."<< std::endl;
-    semiparallelTimes[i] = parallel(seed, w, t, k, l, v, nw);
+    semiparallelTimes[i] = semiparallel(seed, w, t, k, l, v, nw);
   }
 
   // report
   std::cout << std::endl;
   std::cout << "AUTOPILOT REPORT" << std::endl;
   std::cout << "Sequential:\t\t" << seq << std::endl;
-  for (int i = 0; i <= limit; i++) {
-    unsigned nw = pow (2, i);
+  for (unsigned i = 0; i <= limit; i++) {
+    unsigned nw = (unsigned) pow (2, i);
     std::cout << "Parallel " << nw << " threads:\t" << parallelTimes[i] << std::endl;
   }
-  for (int i = 0; i <= limit; i++) {
-    unsigned nw = pow (2, i);
+  for (unsigned i = 0; i <= limit; i++) {
+    unsigned nw = (unsigned) pow (2, i);
     std::cout << "Semi-parallel " << nw << " threads:\t" << semiparallelTimes[i] << std::endl;
   }
   std::cout << std::endl;
@@ -191,13 +191,13 @@ int main(int argc, char *argv[]) {
   }
 
   // standard arguments
-  auto seed = (unsigned int) atoi(argv[1]);
-  auto w = atoi(argv[2]);  // window size
-  auto t = atoi(argv[3]);  // tuple size
-  auto k = atoi(argv[4]);  // sliding factor
-  auto l = atoi(argv[5]);  // stream length
-  bool v = atoi(argv[6]);  // verbose
-  auto nw = argc == 8 ? atoi(argv[7]) : 0;
+  auto seed = (unsigned) atoi(argv[1]);
+  auto w = (unsigned) atoi(argv[2]);        // window size
+  auto t = (unsigned) atoi(argv[3]);        // tuple size
+  auto k = (unsigned) atoi(argv[4]);        // sliding factor
+  auto l = (unsigned long) atol(argv[5]);   // stream length
+  auto v = (bool) atoi(argv[6]);            // verbose
+  auto nw = argc == 8 ? (unsigned) atoi(argv[7]) : 0;
 
   std::cout << "[Main]\tExpected windows: " << ceil(((double) (l - w)) / k) + 1 << std::endl << std::endl;
 

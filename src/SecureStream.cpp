@@ -1,6 +1,6 @@
 #include "SecureStream.hpp"
 
-SecureStream::SecureStream(int t, int w, int k, long l, unsigned int seed) : Stream(t, w, k, l, seed) {}
+SecureStream::SecureStream(unsigned t, unsigned w, unsigned k, unsigned long l, unsigned seed) : Stream(t, w, k, l, seed) {}
 
 std::pair<int, Window> SecureStream::getWindow() {
   std::unique_lock<std::mutex> lock(mutex);
