@@ -95,7 +95,7 @@ long semiparallel(unsigned seed, unsigned w, unsigned t, unsigned k, unsigned lo
 }
 
 
-long emitterCollector(unsigned seed, unsigned w, unsigned t, unsigned k, unsigned long l, bool verbose, unsigned nw) {
+long emitterCollector(unsigned seed, unsigned w, unsigned t, unsigned k, unsigned long l, bool verbose, unsigned nw, unsigned nt) {
   // timer
   Timer timer("EmitterCollector");
 
@@ -115,7 +115,7 @@ long emitterCollector(unsigned seed, unsigned w, unsigned t, unsigned k, unsigne
   std::thread streamGenerator(Task::secureGenerator, inputStream, verbose);
 
   // emitter
-  std::thread emitter(Task::secureEmitter, inputStream, inputQueues, verbose);
+  std::thread emitter(Task::secureEmitter, inputStream, inputQueues, verbose, nt);
 
   // workers
   Queue<std::thread *> threads;
@@ -152,6 +152,7 @@ void autopilot(std::string arg) {
   unsigned k = 1;           // sliding factor
   unsigned long l = 10000;  // stream length: 10.000
   bool v = false;           // verbose
+  unsigned nt = 10;         // number of task that the emitter pass to each worker at time
 
     // compute number of threads
   unsigned concurentThreadsSupported = std::thread::hardware_concurrency();
@@ -200,7 +201,7 @@ void autopilot(std::string arg) {
     for (unsigned i = 0; i <= limit; i++) {
       unsigned nw = (unsigned) pow(2, i);
       std::cout << std::endl << "Emitter-collector with " << nw << " threads."<< std::endl;
-      emitterCollectorTimes->at(i) = emitterCollector(seed, w, t, k, l, v, nw);
+      emitterCollectorTimes->at(i) = emitterCollector(seed, w, t, k, l, v, nw, nt);
     }
   }
 
@@ -238,7 +239,7 @@ void autopilot(std::string arg) {
 
 void help() {
   std::cout << std::endl;
-  std::cout << "Usage: skyline seed w t k l [nw]" << std::endl;
+  std::cout << "Usage: skyline seed w t k l [nw [nt]]" << std::endl;
   std::cout << "seed = seed for random numbers" << std::endl;
   std::cout << "w = window size" << std::endl;
   std::cout << "t = tuple size" << std::endl;
@@ -246,6 +247,7 @@ void help() {
   std::cout << "l = stream length" << std::endl;
   std::cout << "v = verbose (0 to suppress print, 1 to show)" << std::endl;
   std::cout << "nw = number of worker, optional, empty or 0 for sequential execution" << std::endl;
+  std::cout << "nt = number of task at a time assigned to the worker, optional" << std::endl;
   std::cout << std::endl;
   std::cout << "Auto usage: skyline auto" << std::endl;
   std::cout << "Will run parallel and sequential tests with timers and print some statistics." << std::endl;
@@ -271,7 +273,7 @@ int main(int argc, char *argv[]) {
   }
 
   // wrong args: help message
-  if (argc != 7 && argc != 8) {
+  if (argc < 7 || argc > 9) {
     help();    // show the help message
     return 1;  // return error code
   }
@@ -283,15 +285,28 @@ int main(int argc, char *argv[]) {
   auto k = (unsigned) atoi(argv[4]);        // sliding factor
   auto l = (unsigned long) atol(argv[5]);   // stream length
   auto v = (bool) atoi(argv[6]);            // verbose
-  auto nw = argc == 8 ? (unsigned) atoi(argv[7]) : 0;
+  // number of workers
+  auto nw = argc >= 8 ? (unsigned) atoi(argv[7]) : 0;
+  //number of task that the emitter pass to each worker at time
+  auto nt = argc == 9 ? (unsigned) atoi(argv[8]) : 0;
 
-  std::cout << "[Main]\tExpected windows: " << ceil(((double) (l - w)) / k) + 1 << std::endl << std::endl;
+  std::cout <<"[Main]\tExpected windows: " << ceil(((double) (l - w)) / k) + 1 << std::endl << std::endl;
 
   // run with nw for parallel, without nw for sequential
-  if (nw > 0) parallel(seed, w, t, k, l, v, nw);
-  else sequential(seed, w, t, k, l, v);
+  if (nw > 0 && nt > 0) {
+    std::cout << "[Main]\tRunning in emitter-collector mode." << std::endl;
+    emitterCollector(seed, w, t, k, l, v, nw, nt);
+  }
+  else if (nw > 0) {
+    std::cout << "[Main]\tRunning in parallel mode." << std::endl;
+    parallel(seed, w, t, k, l, v, nw);
+  }
+  else {
+    std::cout << "[Main]\tRunning in sequential mode." << std::endl;
+    sequential(seed, w, t, k, l, v);
+  }
 
 }
 
 // TODO: Still not scale. Try to figure out why with a profiler.
-// Try also to push more than one window per thread at time.
+// Try also parallel picking more than one window per time.

@@ -18,7 +18,7 @@ public:
 
   static unsigned long secureGenerator(SecureStream *stream, bool verbose);
 
-  static unsigned long secureEmitter(Stream *inputStream, std::vector<WorkerQueue*> *inputQueues, bool verbose);
+  static unsigned long secureEmitter(Stream *inputStream, std::vector<WorkerQueue*> *inputQueues, bool verbose, unsigned nt);
 
   static unsigned long worker(Stream *inputStream, Queue<std::pair<int, Skyline>> *outputStream, bool verbose);
 

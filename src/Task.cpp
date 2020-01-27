@@ -25,25 +25,30 @@ unsigned long Task::secureGenerator(SecureStream *stream, bool verbose) {
   return timer.getTime();
 }
 
-unsigned long Task::secureEmitter(Stream *inputStream, std::vector<WorkerQueue*> *inputQueues, bool verbose) {
+unsigned long Task::secureEmitter(Stream *inputStream, std::vector<WorkerQueue*> *inputQueues, bool verbose, unsigned nt) {
   Timer timer("SecureEmitter");
   unsigned long nextWorker = -1;
   int wIndex;
   Window window;
   // pick first window
   std::tie(wIndex, window) = inputStream->getWindow();
+  // while element in the input stream
   while (!window.empty()) {
+    unsigned i = 0;
     // pick next worker
     nextWorker = (nextWorker + 1) % inputQueues->size();
     WorkerQueue *workerQueue = inputQueues->at(nextWorker);
-    // push the window
-    workerQueue->push(std::pair(wIndex, window));
-    // log
-    if (verbose)
-      std::cout << "[SecureEmitter]\tAssigned window " + std::to_string(wIndex) + " to worker :" +
-        std::to_string(nextWorker) + "\n";
-    // pick next window
-    std::tie(wIndex, window) = inputStream->getWindow();
+    // for i = 0 to nt
+    while (i < nt && !window.empty()) {
+      // push the window
+      workerQueue->push(std::pair(wIndex, window));
+      // log
+      if (verbose)
+        std::cout << "[SecureEmitter]\tAssigned window " + std::to_string(wIndex) + " to worker :" +
+          std::to_string(nextWorker) + "\n";
+      // pick next window
+      std::tie(wIndex, window) = inputStream->getWindow();
+    }
   }
   // set EOQ in all the queues
   for (unsigned long i = 0; i < inputQueues->size(); i++)
