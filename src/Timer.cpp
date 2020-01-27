@@ -1,6 +1,6 @@
 #include "Timer.hpp"
 
-Timer::Timer(std::string message) : message(std::move(message)) {
+Timer::Timer(std::string _message) : message(std::move(_message)) {
   start = std::chrono::system_clock::now();
 }
 
