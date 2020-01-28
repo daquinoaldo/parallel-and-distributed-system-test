@@ -22,4 +22,21 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()	
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
-add_executable(skyline src/main.cpp src/Utils.cpp src/Utils.hpp src/Stream.cpp src/Stream.hpp src/SecureQueue.hpp src/types.hpp src/SecureStream.cpp src/SecureStream.hpp src/Task.cpp src/Task.hpp src/Timer.cpp src/Timer.hpp)
+add_executable(skyline
+  src/main.cpp
+  src/sequential.hpp
+  src/parallel.hpp
+  src/types.hpp
+  src/Task.cpp
+  src/Task.hpp
+  src/Utils.hpp
+  src/Utils.cpp
+  src/Timer.cpp
+  src/Timer.hpp
+  src/Queue.hpp
+  src/SecureQueue.hpp
+  src/Stream.hpp
+  src/Stream.cpp
+  src/SecureStream.cpp
+  src/SecureStream.hpp
+)
