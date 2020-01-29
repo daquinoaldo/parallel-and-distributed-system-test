@@ -31,8 +31,9 @@ skyline
 # Infer
 infer-out
 
+# gdb & valgrind
+gmon.out
+valgrind-out.txt
+
 # CLion
 .idea
-
-# Custom
-sync.sh

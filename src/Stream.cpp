@@ -4,6 +4,8 @@ Stream::Stream(unsigned _t, unsigned _w, unsigned _k, unsigned long _l, unsigned
   srand(seed);
 }
 
+Stream::~Stream() = default;
+
 void Stream::push(const Tuple &item) {
   queue.push(item);
 }

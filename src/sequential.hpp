@@ -20,6 +20,10 @@ long sequential(unsigned s, unsigned w, unsigned t, unsigned k, unsigned long l,
   // print the output stream
   Task::printer(outputStream, v);
 
+  // release the memory
+  delete inputStream;
+  delete outputStream;
+
   // return time spent for autopilot
   return timer.getTime();
 }

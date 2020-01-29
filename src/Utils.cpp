@@ -26,15 +26,6 @@ std::string Utils::serializeWindow(Window window) {
   return string;
 }
 
-
-/*std::string Utils::serializeStream(Stream *stream) {
-  std::string string = "[";
-  for (unsigned long i = 0; i < stream->size(); i++)
-    string += serializeTuple(stream->get(i)) + (i != stream->size() - 1 ? ", " : "]");
-  return string;
-}*/
-
-
 short Utils::compareTuple(const Tuple &ti, const Tuple &tj) {
   unsigned long k = 0;
   bool allLT = true;

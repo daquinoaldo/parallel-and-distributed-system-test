@@ -16,6 +16,8 @@ private:
 public:
   SecureStream(unsigned t, unsigned w, unsigned k, unsigned long l, unsigned seed);
 
+  ~SecureStream();
+
   void push(const Tuple &item) override;
 
   std::pair<int, Window> getWindow() override;

@@ -31,9 +31,16 @@ long parallel(unsigned s, unsigned w, unsigned t, unsigned k, unsigned long l, b
   // join threads
   streamGenerator.join();
   inputStream->awakeAll();
-  for (unsigned i = 0; i < nw; i++)
-    threads.pop()->join();
+  for (unsigned i = 0; i < nw; i++) {
+    auto thread = threads.pop();
+    thread->join(); // await thread
+    delete thread;  // release memory
+  }
   outputPrinter.join();
+
+  // release the memory
+  delete inputStream;
+  delete outputStream;
 
   // return time spent for autopilot
   return timer.getTime();
@@ -60,11 +67,18 @@ long semiparallel(unsigned s, unsigned w, unsigned t, unsigned k, unsigned long 
 
   // join threads
   inputStream->awakeAll();
-  for (unsigned i = 0; i < nw; i++)
-    threads.pop()->join();
+  for (unsigned i = 0; i < nw; i++) {
+    auto thread = threads.pop();
+    thread->join(); // await thread
+    delete thread;  // release memory
+  }
 
   // print the output stream after the workers have finished
   Task::securePrinter(outputStream, v);
+
+  // release the memory
+  delete inputStream;
+  delete outputStream;
 
   // return time spent for autopilot
   return timer.getTime();
@@ -79,13 +93,11 @@ long emitterCollector(unsigned s, unsigned w, unsigned t, unsigned k, unsigned l
   auto inputStream = new SecureStream(t, w, k, l, s);
   auto outputStream = new SecureQueue<std::pair<int, Skyline>>;
   auto inputQueues = new std::vector<WorkerQueue*>(nw);
-  for (unsigned i = 0; i < nw; i++) {
+  for (unsigned i = 0; i < nw; i++)
     inputQueues->at(i) = new WorkerQueue();
-  }
   auto outputQueues = new std::vector<WorkerQueue*>(nw);
-  for (unsigned i = 0; i < nw; i++) {
+  for (unsigned i = 0; i < nw; i++)
     outputQueues->at(i) = new WorkerQueue();
-  }
 
   // generate input stream
   std::thread streamGenerator(Task::secureGenerator, inputStream, v);
@@ -110,10 +122,25 @@ long emitterCollector(unsigned s, unsigned w, unsigned t, unsigned k, unsigned l
   streamGenerator.join();
   emitter.join();
   inputStream->awakeAll();
-  for (unsigned i = 0; i < nw; i++)
-    threads.pop()->join();
+  for (unsigned i = 0; i < nw; i++) {
+    auto thread = threads.pop();
+    thread->join(); // await thread
+    delete thread;  // release memory
+  }
   collector.join();
   outputPrinter.join();
+
+  // release the memory
+  delete inputStream;
+  delete outputStream;
+  for (unsigned i = 0; i < nw; i++) {
+    delete inputQueues->at(i);
+  }
+  delete inputQueues;
+  for (unsigned i = 0; i < nw; i++) {
+    delete outputQueues->at(i);
+  }
+  delete outputQueues;
 
   // return time spent for autopilot
   return timer.getTime();

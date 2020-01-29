@@ -21,6 +21,8 @@ private:
 public:
   Stream(unsigned t, unsigned w, unsigned k, unsigned long l, unsigned seed);
 
+  virtual ~Stream();
+
   virtual void push(const Tuple &item);
 
   virtual std::pair<int, Window> getWindow();

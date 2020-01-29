@@ -3,6 +3,8 @@
 SecureStream::SecureStream(unsigned _t, unsigned _w, unsigned _k, unsigned long _l, unsigned seed)
   : Stream(_t, _w, _k, _l, seed) {}
 
+SecureStream::~SecureStream() = default;
+
 std::pair<int, Window> SecureStream::getWindow() {
   std::unique_lock<std::mutex> lock(mutex);
   condition.wait(lock, [=] { return Stream::size() > (unsigned long) getW() || EOS; });

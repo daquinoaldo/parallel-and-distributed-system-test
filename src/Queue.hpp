@@ -13,6 +13,7 @@ private:
 public:
 
   Queue() = default;
+  ~Queue() = default;
 
   void push(T const &item) {
     deque.push_front(item);

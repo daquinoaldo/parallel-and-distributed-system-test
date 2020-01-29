@@ -10,10 +10,26 @@ debug: clean-debug
 	make -C cmake-build-debug
 	cp cmake-build-debug/skyline skyline-debug
 
+valgrind: build
+	valgrind --leak-check=full \
+					--show-leak-kinds=all \
+					--track-origins=yes \
+					--verbose \
+					--log-file=valgrind-out.txt \
+					./skyline
+
+valgrind-debug: debug
+	valgrind --leak-check=full \
+					--show-leak-kinds=all \
+					--track-origins=yes \
+					--verbose \
+					--log-file=valgrind-out.txt \
+					./skyline-debug
+
 infer: clean
 	infer -- cmake -B cmake-build
 
-infer-debug: clean
+infer-debug: clean-debug
 	infer -- cmake -B cmake-build-debug -DCMAKE_BUILD_TYPE=Debug
 
 clean:

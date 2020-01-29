@@ -18,6 +18,7 @@ private:
 public:
 
   SecureQueue() = default;
+  ~SecureQueue() = default;
 
   void push(T const &item) {
     // unique lock will be released when leave this block

@@ -76,6 +76,11 @@ void autopilot(unsigned s, unsigned w, unsigned t, unsigned k, unsigned long l, 
     std::cout << "Emitter-collector " << nw << " threads:\t" << emitterCollectorTimes->at(i) << std::endl;
   }
 
+  // release memory
+  delete parallelTimes;
+  delete semiparallelTimes;
+  delete emitterCollectorTimes;
+
   std::cout << std::endl;
 }
 
@@ -109,7 +114,7 @@ int main(int argc, char *argv[]) {
   unsigned concurentThreadsSupported = std::thread::hardware_concurrency();
   if (concurentThreadsSupported <= 0) // not able to detect
     concurentThreadsSupported = 128;
-  std::cout << "Your machine supports " << concurentThreadsSupported << " threads." << std::endl;
+  std::cout << "[Main] Your machine supports " << concurentThreadsSupported << " threads." << std::endl;
 
   // auto mode arguments
   if (argc >= 2 && strcmp(argv[1], "auto") == 0) {
@@ -122,7 +127,7 @@ int main(int argc, char *argv[]) {
   auto w = argc >= 4 ? (unsigned) atoi(argv[3]) : 100;                        // window size
   auto t = argc >= 5 ? (unsigned) atoi(argv[4]) : 50;                         // tuple size
   auto k = argc >= 6 ? (unsigned) atoi(argv[5]) : 1;                          // sliding factor
-  auto l = argc >= 7 ? (unsigned long) atol(argv[6]) : 10000;                 // stream length
+  auto l = argc >= 7 ? (unsigned long) atol(argv[6]) : 1000;                 // stream length
   auto v = argc >= 8 ? (bool) atoi(argv[7]) : false;                          // verbose
   auto nw = argc >= 9 ? (unsigned) atoi(argv[8]) : concurentThreadsSupported; // number of workers
   auto nt = argc == 10 ? (unsigned) atoi(argv[9]) : 1;                        // task at a time per worker
