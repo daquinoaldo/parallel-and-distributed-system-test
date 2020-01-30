@@ -2,7 +2,7 @@
 project(skyline)
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS -pthread)
+set(CMAKE_CXX_FLAGS "-pthread -fpermissive")
 
 # Compiler warning flags
 set(GCC_W_ALL_LINUX "-Wall -Wextra -pedantic -Wshadow -Walloc-zero -Wduplicated-branches -Wduplicated-cond -Wconversion -Wmissing-declarations -Wmissing-include-dirs -Wnull-dereference -Wsuggest-final-methods -Wsuggest-final-types")
@@ -22,10 +22,13 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()	
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I/usr/local/include/ff")
+
 add_executable(skyline
   src/main.cpp
   src/sequential.hpp
   src/parallel.hpp
+  src/fastflow.hpp
   src/types.hpp
   src/Task.cpp
   src/Task.hpp

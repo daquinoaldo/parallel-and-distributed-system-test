@@ -8,6 +8,7 @@
 #include "Timer.hpp"
 #include "sequential.hpp"
 #include "parallel.hpp"
+#include "fastflow.hpp"
 
 void help();
 void autopilot(unsigned s, unsigned w, unsigned t, unsigned k, unsigned long l, bool v, unsigned max_nw, unsigned nt);
@@ -116,11 +117,6 @@ int main(int argc, char *argv[]) {
     concurentThreadsSupported = 128;
   std::cout << "[Main] Your machine supports " << concurentThreadsSupported << " threads." << std::endl;
 
-  // auto mode arguments
-  if (argc >= 2 && strcmp(argv[1], "auto") == 0) {
-    
-  }
-
   // standard arguments
   auto mode = argc >= 2 ? argv[1] : "auto";                                   // mode
   auto s = argc >= 3 ? (unsigned) atoi(argv[2]) : 42;                         // seed for random
@@ -154,6 +150,10 @@ int main(int argc, char *argv[]) {
   else if (strcmp(mode, "emitter-collector") == 0) {
     std::cout << "[Main]\tRunning in emitter-collector mode." << std::endl;
     emitterCollector(s, w, t, k, l, v, nw, nt);
+  }
+  else if (strcmp(mode, "fastflow") == 0) {
+    std::cout << "[Main]\tRunning in fastflow mode." << std::endl;
+    fastflow(s, w, t, k, l, v, nw);
   }
   else {  // invalid mode
     help();    // show the help message

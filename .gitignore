@@ -1,3 +1,6 @@
+# CLion
+.idea
+
 # Compiled Object files
 *.slo
 *.lo
@@ -28,12 +31,7 @@
 skyline-debug
 skyline
 
-# Infer
-infer-out
-
-# gdb & valgrind
-gmon.out
+# valgrind, gprof & infer
 valgrind-out.txt
-
-# CLion
-.idea
+gmon.out
+infer-out
