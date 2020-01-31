@@ -71,25 +71,22 @@ struct collector_task: ff::ff_node_t<Skyline> {
 
 
 long fastflow(Stream* inputStream, bool v, unsigned nw) {
-  // timer
   Timer timer("Fastflow");
 
   auto emitter = ff::make_unique<emitter_task>(v, inputStream);
   auto collector = ff::make_unique<collector_task>(v);
 
-  std::vector<std::unique_ptr<ff::ff_node>> farm;
+  std::vector<std::unique_ptr<ff::ff_node>> workers;
   for (unsigned i = 0; i < nw; i++)
-    //farm.push_back(ff::make_unique<ff::ff_node_F<long>>(secondStage));
-    farm.push_back(ff::make_unique<worker_task>(v));
+    workers.push_back(ff::make_unique<worker_task>(v));
 
   ff::ff_Pipe<> pipe(
     emitter,
-    ff::make_unique<ff::ff_Farm<long>>(std::move(farm)),
+    ff::make_unique<ff::ff_Farm<Window>>(std::move(workers)),
     collector
   );
   if (pipe.run_and_wait_end() < 0)
     ff::error("running pipe");
 
-  // return time spent for autopilot
   return timer.getTime();
 }

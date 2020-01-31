@@ -14,20 +14,21 @@ void autopilot(Stream* inputStream, bool v, unsigned max_nw, unsigned nt) {
   std::vector<unsigned long>* parallelTimes;
   std::vector<unsigned long>* semiparallelTimes;
   std::vector<unsigned long>* emitterCollectorTimes;
+  std::vector<unsigned long>* fastflowTimes;
   unsigned limit = (unsigned) floor(log2(max_nw));
 
   // RUN
 
   // run sequential
   std::cout << std::endl << "Sequential."<< std::endl;
-  //seq = sequential(inputStream, v);
+  seq = 0;//sequential(inputStream, v);
 
   // run parallel
   parallelTimes = new std::vector<unsigned long>(limit + 1);
   for (unsigned i = 0; i <= limit; i++) {
     unsigned nw = (unsigned) pow(2, i);
     std::cout << std::endl << "Parallel with " << nw << " threads."<< std::endl;
-    //parallelTimes->at(i) = parallel(inputStream, v, nw);
+    parallelTimes->at(i) = 0;//parallel(inputStream, v, nw);
   }
 
   // run semiparallel
@@ -35,7 +36,7 @@ void autopilot(Stream* inputStream, bool v, unsigned max_nw, unsigned nt) {
   for (unsigned i = 0; i <= limit; i++) {
     unsigned nw = (unsigned) pow(2, i);
     std::cout << std::endl << "Semi-parallel with " << nw << " threads."<< std::endl;
-    //semiparallelTimes->at(i) = semiparallel(inputStream, v, nw);
+    semiparallelTimes->at(i) = 0;//semiparallel(inputStream, v, nw);
   }
 
   // run emitter-collector
@@ -43,7 +44,15 @@ void autopilot(Stream* inputStream, bool v, unsigned max_nw, unsigned nt) {
   for (unsigned i = 0; i <= limit; i++) {
     unsigned nw = (unsigned) pow(2, i);
     std::cout << std::endl << "Emitter-collector with " << nw << " threads."<< std::endl;
-    //emitterCollectorTimes->at(i) = emitterCollector(inputStream, v, nw, nt);
+    emitterCollectorTimes->at(i) = 0;//emitterCollector(inputStream, v, nw, nt);
+  }
+
+  // run fastflow
+  fastflowTimes = new std::vector<unsigned long>(limit + 1);
+  for (unsigned i = 0; i <= limit; i++) {
+    unsigned nw = (unsigned) pow(2, i);
+    std::cout << std::endl << "FastFlow with " << nw << " threads."<< std::endl;
+    fastflowTimes->at(i) = fastflow(inputStream, v, nw);
   }
 
 
@@ -72,10 +81,17 @@ void autopilot(Stream* inputStream, bool v, unsigned max_nw, unsigned nt) {
     std::cout << "Emitter-collector " << nw << " threads:\t" << emitterCollectorTimes->at(i) << std::endl;
   }
 
+  // fastflow
+  for (unsigned i = 0; i <= limit; i++) {
+    unsigned nw = (unsigned) pow (2, i);
+    std::cout << "Fastflow " << nw << " threads:\t" << fastflowTimes->at(i) << std::endl;
+  }
+
   // release memory
   delete parallelTimes;
   delete semiparallelTimes;
   delete emitterCollectorTimes;
+  delete fastflowTimes;
 
   std::cout << std::endl;
 }
@@ -118,7 +134,7 @@ int main(int argc, char *argv[]) {
   auto w = argc >= 4 ? (unsigned) atoi(argv[3]) : 100;                        // window size
   auto t = argc >= 5 ? (unsigned) atoi(argv[4]) : 50;                         // tuple size
   auto k = argc >= 6 ? (unsigned) atoi(argv[5]) : 1;                          // sliding factor
-  auto l = argc >= 7 ? (unsigned long) atol(argv[6]) : 1000;                 // stream length
+  auto l = argc >= 7 ? (unsigned long) atol(argv[6]) : 100000;                // stream length
   auto v = argc >= 8 ? (bool) atoi(argv[7]) : false;                          // verbose
   auto nw = argc >= 9 ? (unsigned) atoi(argv[8]) : concurentThreadsSupported; // number of workers
   auto nt = argc == 10 ? (unsigned) atoi(argv[9]) : 1;                        // task at a time per worker
