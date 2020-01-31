@@ -3,6 +3,7 @@
 #include <thread>
 #include "Utils.hpp"
 #include "Timer.hpp"
+#include "parallel.hpp"
 #include "fastflow.hpp"
 
 void help();
@@ -11,10 +12,6 @@ void autopilot(Stream* inputStream, bool v, unsigned max_nw, unsigned nt);
 
 void autopilot(Stream* inputStream, bool v, unsigned max_nw, unsigned nt) {
   unsigned long seq;
-  std::vector<unsigned long>* parallelTimes;
-  std::vector<unsigned long>* semiparallelTimes;
-  std::vector<unsigned long>* emitterCollectorTimes;
-  std::vector<unsigned long>* fastflowTimes;
   unsigned limit = (unsigned) floor(log2(max_nw));
 
   // RUN
@@ -24,35 +21,27 @@ void autopilot(Stream* inputStream, bool v, unsigned max_nw, unsigned nt) {
   seq = 0;//sequential(inputStream, v);
 
   // run parallel
-  parallelTimes = new std::vector<unsigned long>(limit + 1);
+  std::vector<unsigned long> parallelTimes(limit + 1);
   for (unsigned i = 0; i <= limit; i++) {
     unsigned nw = (unsigned) pow(2, i);
     std::cout << std::endl << "Parallel with " << nw << " threads."<< std::endl;
-    parallelTimes->at(i) = 0;//parallel(inputStream, v, nw);
-  }
-
-  // run semiparallel
-  semiparallelTimes = new std::vector<unsigned long>(limit + 1);
-  for (unsigned i = 0; i <= limit; i++) {
-    unsigned nw = (unsigned) pow(2, i);
-    std::cout << std::endl << "Semi-parallel with " << nw << " threads."<< std::endl;
-    semiparallelTimes->at(i) = 0;//semiparallel(inputStream, v, nw);
+    parallelTimes[i] = parallel(inputStream, v, nw);
   }
 
   // run emitter-collector
-  emitterCollectorTimes = new std::vector<unsigned long>(limit + 1);
+  std::vector<unsigned long> emitterCollectorTimes(limit + 1);
   for (unsigned i = 0; i <= limit; i++) {
     unsigned nw = (unsigned) pow(2, i);
     std::cout << std::endl << "Emitter-collector with " << nw << " threads."<< std::endl;
-    emitterCollectorTimes->at(i) = 0;//emitterCollector(inputStream, v, nw, nt);
+    emitterCollectorTimes[i] = 0;//emitterCollector(inputStream, v, nw, nt);
   }
 
   // run fastflow
-  fastflowTimes = new std::vector<unsigned long>(limit + 1);
+  std::vector<unsigned long> fastflowTimes(limit + 1);
   for (unsigned i = 0; i <= limit; i++) {
     unsigned nw = (unsigned) pow(2, i);
     std::cout << std::endl << "FastFlow with " << nw << " threads."<< std::endl;
-    fastflowTimes->at(i) = fastflow(inputStream, v, nw);
+    fastflowTimes[i] = fastflow(inputStream, v, nw);
   }
 
 
@@ -66,32 +55,20 @@ void autopilot(Stream* inputStream, bool v, unsigned max_nw, unsigned nt) {
   // parallel
   for (unsigned i = 0; i <= limit; i++) {
     unsigned nw = (unsigned) pow (2, i);
-    std::cout << "Parallel " << nw << " threads:\t" << parallelTimes->at(i) << std::endl;
-  }
-
-  // semi-parallel
-  for (unsigned i = 0; i <= limit; i++) {
-    unsigned nw = (unsigned) pow (2, i);
-    std::cout << "Semi-parallel " << nw << " threads:\t" << semiparallelTimes->at(i) << std::endl;
+    std::cout << "Parallel " << nw << " threads:\t" << parallelTimes[i] << std::endl;
   }
 
   // emitter-collector
   for (unsigned i = 0; i <= limit; i++) {
     unsigned nw = (unsigned) pow (2, i);
-    std::cout << "Emitter-collector " << nw << " threads:\t" << emitterCollectorTimes->at(i) << std::endl;
+    std::cout << "Emitter-collector " << nw << " threads:\t" << emitterCollectorTimes[i] << std::endl;
   }
 
   // fastflow
   for (unsigned i = 0; i <= limit; i++) {
     unsigned nw = (unsigned) pow (2, i);
-    std::cout << "Fastflow " << nw << " threads:\t" << fastflowTimes->at(i) << std::endl;
+    std::cout << "Fastflow " << nw << " threads:\t" << fastflowTimes[i] << std::endl;
   }
-
-  // release memory
-  delete parallelTimes;
-  delete semiparallelTimes;
-  delete emitterCollectorTimes;
-  delete fastflowTimes;
 
   std::cout << std::endl;
 }
@@ -100,7 +77,7 @@ void autopilot(Stream* inputStream, bool v, unsigned max_nw, unsigned nt) {
 void help() {
   std::cout << std::endl;
   std::cout << "Usage: skyline mode s w t k l [nw [nt]]" << std::endl;
-  std::cout << "mode = auto, sequential, parallel, semi-parallel, emitter-collector, ff" << std::endl;
+  std::cout << "mode = auto, sequential, parallel, emitter-collector, fastflow" << std::endl;
   std::cout << "s = seed for random numbers" << std::endl;
   std::cout << "w = window size" << std::endl;
   std::cout << "t = tuple size" << std::endl;
@@ -158,11 +135,7 @@ int main(int argc, char *argv[]) {
   }
   else if (strcmp(mode, "parallel") == 0) {
     std::cout << "[Main]\tRunning in parallel mode." << std::endl;
-    //parallel(inputStream, v, nw);
-  }
-  else if (strcmp(mode, "semi-parallel") == 0) {
-    std::cout << "[Main]\tRunning in semi-parallel mode." << std::endl;
-    //semiparallel(inputStream, v, nw);
+    parallel(inputStream, v, nw);
   }
   else if (strcmp(mode, "emitter-collector") == 0) {
     std::cout << "[Main]\tRunning in emitter-collector mode." << std::endl;
@@ -173,9 +146,14 @@ int main(int argc, char *argv[]) {
     fastflow(inputStream, v, nw);
   }
   else {  // invalid mode
+    delete inputStream;
     help();    // show the help message
     return 1;  // return error code
   }
+
+  // release memory
+  delete inputStream;
+
 }
 
 // TODO: Still not scale. Try to figure out why with a profiler.

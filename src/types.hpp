@@ -17,10 +17,10 @@ public:
 
 class Window: public std::vector<Tuple*> {
 private:
-  const ulong i;
+  const long i;
 public:
-  Window(const ulong &__a, const ulong &id): std::vector<Tuple*>(__a), i(id) {}
-  ulong id() { return i; }
+  Window(const ulong &__a, const long &id): std::vector<Tuple*>(__a), i(id) {}
+  long id() { return i; }
 };
 
 typedef Window Skyline;

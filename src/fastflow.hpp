@@ -18,7 +18,7 @@ struct emitter_task: ff::ff_node_t<Window> {
       window = stream->pickWindow(i);
       if (v) {
         std::stringstream message;
-        message << "[Emitter" << get_my_id() << "] Window " << i << ": "
+        message << "[Emitter] Window " << i << ": "
                 << Utils::serializeWindow(window) << std::endl;
         std::cout << message.str();
       }
@@ -41,14 +41,16 @@ struct worker_task: ff::ff_node_t<Window> {
       std::cout << message.str();
     }
 
-    return Utils::processWindow(window);
+    auto skyline = Utils::processWindow(window);
 
     if (v) {
       std::stringstream message;
-      message << "[Worker" << get_my_id() << "] Skyline " << window->id() << ": "
-              << Utils::serializeWindow(window) << std::endl;
+      message << "[Worker" << get_my_id() << "] Skyline " << skyline->id() << ": "
+              << Utils::serializeWindow(skyline) << std::endl;
       std::cout << message.str();
     }
+
+    return skyline;
   }
 };
 
@@ -60,7 +62,7 @@ struct collector_task: ff::ff_node_t<Skyline> {
   Skyline* svc(Skyline* skyline) {
     if (v) {
       std::stringstream message;
-      message << "[Collector" << get_my_id() << "] Skyline " << skyline->id() << ": "
+      message << "[Collector] Skyline " << skyline->id() << ": "
               << Utils::serializeWindow(skyline) << std::endl;
       std::cout << message.str();
     }
