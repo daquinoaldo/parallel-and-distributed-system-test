@@ -1,20 +1,15 @@
 #include <cstring>
 #include <iostream>
 #include <thread>
-#include <cmath>
 #include "Utils.hpp"
-#include "SecureStream.hpp"
-#include "SecureQueue.hpp"
 #include "Timer.hpp"
-#include "sequential.hpp"
-#include "parallel.hpp"
 #include "fastflow.hpp"
 
 void help();
-void autopilot(unsigned s, unsigned w, unsigned t, unsigned k, unsigned long l, bool v, unsigned max_nw, unsigned nt);
+void autopilot(Stream* inputStream, bool v, unsigned max_nw, unsigned nt);
 
 
-void autopilot(unsigned s, unsigned w, unsigned t, unsigned k, unsigned long l, bool v, unsigned max_nw, unsigned nt) {
+void autopilot(Stream* inputStream, bool v, unsigned max_nw, unsigned nt) {
   unsigned long seq;
   std::vector<unsigned long>* parallelTimes;
   std::vector<unsigned long>* semiparallelTimes;
@@ -25,14 +20,14 @@ void autopilot(unsigned s, unsigned w, unsigned t, unsigned k, unsigned long l, 
 
   // run sequential
   std::cout << std::endl << "Sequential."<< std::endl;
-  seq = sequential(s, w, t, k, l, v);
+  //seq = sequential(inputStream, v);
 
   // run parallel
   parallelTimes = new std::vector<unsigned long>(limit + 1);
   for (unsigned i = 0; i <= limit; i++) {
     unsigned nw = (unsigned) pow(2, i);
     std::cout << std::endl << "Parallel with " << nw << " threads."<< std::endl;
-    parallelTimes->at(i) = parallel(s, w, t, k, l, v, nw);
+    //parallelTimes->at(i) = parallel(inputStream, v, nw);
   }
 
   // run semiparallel
@@ -40,7 +35,7 @@ void autopilot(unsigned s, unsigned w, unsigned t, unsigned k, unsigned long l, 
   for (unsigned i = 0; i <= limit; i++) {
     unsigned nw = (unsigned) pow(2, i);
     std::cout << std::endl << "Semi-parallel with " << nw << " threads."<< std::endl;
-    semiparallelTimes->at(i) = semiparallel(s, w, t, k, l, v, nw);
+    //semiparallelTimes->at(i) = semiparallel(inputStream, v, nw);
   }
 
   // run emitter-collector
@@ -48,7 +43,7 @@ void autopilot(unsigned s, unsigned w, unsigned t, unsigned k, unsigned long l, 
   for (unsigned i = 0; i <= limit; i++) {
     unsigned nw = (unsigned) pow(2, i);
     std::cout << std::endl << "Emitter-collector with " << nw << " threads."<< std::endl;
-    emitterCollectorTimes->at(i) = emitterCollector(s, w, t, k, l, v, nw, nt);
+    //emitterCollectorTimes->at(i) = emitterCollector(inputStream, v, nw, nt);
   }
 
 
@@ -128,32 +123,38 @@ int main(int argc, char *argv[]) {
   auto nw = argc >= 9 ? (unsigned) atoi(argv[8]) : concurentThreadsSupported; // number of workers
   auto nt = argc == 10 ? (unsigned) atoi(argv[9]) : 1;                        // task at a time per worker
 
-  std::cout <<"[Main]\tExpected windows: " << ceil(((double) (l - w)) / k) + 1 << std::endl << std::endl;
+  // init rand with a seed
+  srand(s);
+
+  // generate input stream
+  auto inputStream = new Stream(l, w, t, k);
+  std::cout <<"[Main]\tExpected windows: " << inputStream->w_no() << std::endl << std::endl;
+
 
   // run the chosen mode
   if (strcmp(mode, "auto") == 0) {
     std::cout << "[Main]\tRunning in autopilot mode." << std::endl;
-    autopilot(s, w, t, k, l, v, nw, nt);
+    autopilot(inputStream, v, nw, nt);
   }
   else if (strcmp(mode, "sequential") == 0) {
     std::cout << "[Main]\tRunning in sequential mode." << std::endl;
-    sequential(s, w, t, k, l, v);
+    //sequential(inputStream, v);
   }
   else if (strcmp(mode, "parallel") == 0) {
     std::cout << "[Main]\tRunning in parallel mode." << std::endl;
-    parallel(s, w, t, k, l, v, nw);
+    //parallel(inputStream, v, nw);
   }
   else if (strcmp(mode, "semi-parallel") == 0) {
     std::cout << "[Main]\tRunning in semi-parallel mode." << std::endl;
-    semiparallel(s, w, t, k, l, v, nw);
+    //semiparallel(inputStream, v, nw);
   }
   else if (strcmp(mode, "emitter-collector") == 0) {
     std::cout << "[Main]\tRunning in emitter-collector mode." << std::endl;
-    emitterCollector(s, w, t, k, l, v, nw, nt);
+    //emitterCollector(inputStream, v, nw, nt);
   }
   else if (strcmp(mode, "fastflow") == 0) {
     std::cout << "[Main]\tRunning in fastflow mode." << std::endl;
-    fastflow(s, w, t, k, l, v, nw);
+    fastflow(inputStream, v, nw);
   }
   else {  // invalid mode
     help();    // show the help message
@@ -164,3 +165,13 @@ int main(int argc, char *argv[]) {
 // TODO: Still not scale. Try to figure out why with a profiler.
 // Try also parallel picking more than one window per time.
 // Try also using pointers instead of copy.
+
+
+// FF time
+// 1: 404067
+// 2: 220247
+// 4: 129758
+// 8:  80376
+// 16: 46564
+// 32: 64438
+// 64: 80502

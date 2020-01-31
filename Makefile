@@ -1,4 +1,4 @@
-.PHONY: build debug infer infer-debug clean clean-debug clean-all auto
+.PHONY: build debug valgrind valgrind-debug infer infer-debug clean clean-debug clean-all auto
 
 build: clean
 	cmake -B cmake-build

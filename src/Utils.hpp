@@ -3,19 +3,17 @@
 
 
 #include <string>
+#include <vector>
 #include "types.hpp"
 
 class Utils {
 private:
-  static short compareTuple(const Tuple &ti, const Tuple &tj);
+  static short compareTuple(Tuple* ti, Tuple* tj);
 
 public:
-  static Tuple newTuple(int t);
-
-  static std::string serializeTuple(Tuple tuple);
-  static std::string serializeWindow(Window window);
-
-  static std::vector<std::vector<int>> processWindow(Window window);
+  static std::string serializeTuple(Tuple* tuple);
+  static std::string serializeWindow(Window* window);
+  static Skyline* processWindow(Window* window);
 };
 
 
