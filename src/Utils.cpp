@@ -83,7 +83,7 @@ Skyline* Utils::processWindow(Window* window) {
       si++;
     }
 
-  // the window can be deallocated, but not its tuple
+  // the window can be deallocated, but not its tuples
   delete window;
 
   return skyline;

@@ -109,9 +109,9 @@ int main(int argc, char *argv[]) {
   auto mode = argc >= 2 ? argv[1] : "auto";                                   // mode
   auto s = argc >= 3 ? (unsigned) atoi(argv[2]) : 42;                         // seed for random
   auto w = argc >= 4 ? (unsigned) atoi(argv[3]) : 100;                        // window size
-  auto t = argc >= 5 ? (unsigned) atoi(argv[4]) : 50;                         // tuple size
+  auto t = argc >= 5 ? (unsigned) atoi(argv[4]) : 10;                         // tuple size
   auto k = argc >= 6 ? (unsigned) atoi(argv[5]) : 1;                          // sliding factor
-  auto l = argc >= 7 ? (unsigned long) atol(argv[6]) : 100000;                // stream length
+  auto l = argc >= 7 ? (unsigned long) atol(argv[6]) : 1000;                // stream length
   auto v = argc >= 8 ? (bool) atoi(argv[7]) : false;                          // verbose
   auto nw = argc >= 9 ? (unsigned) atoi(argv[8]) : concurentThreadsSupported; // number of workers
   auto nt = argc == 10 ? (unsigned) atoi(argv[9]) : 1;                        // task at a time per worker

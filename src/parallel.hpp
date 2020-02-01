@@ -26,6 +26,7 @@ long parallel(Stream* inputStream, bool v, unsigned nw) {
       }
       inputQueue.push(window);
     }
+    // push one EOQ for each worker
     for (ulong i = 0; i < nw; i++)
       inputQueue.push(EOQ);
   });
@@ -61,9 +62,10 @@ long parallel(Stream* inputStream, bool v, unsigned nw) {
   // collector
   auto collector = new std::thread([&v, &outputQueue, &EOQ, &isEOQ, &nw]() {
     auto EOQ_count = 0;
-    auto skyline = outputQueue.pop();
+    // wait for all the workers to end
     while (EOQ_count < nw) {
-      if (!isEOQ(skyline)) {
+      auto skyline = outputQueue.pop();
+      if (isEOQ(skyline)) {
         EOQ_count++;
         continue;
       }
@@ -73,19 +75,22 @@ long parallel(Stream* inputStream, bool v, unsigned nw) {
         std::cout << message.str();
       }
       delete skyline;
-      skyline = outputQueue.pop();
     }
   });
 
 
   // join threads
   emitter->join();
+  delete emitter;
   for (unsigned i = 0; i < nw; i++) {
     auto worker = workers.pop();
     worker->join();
     delete worker;
   }
   collector->join();
+  delete collector;
+
+  delete EOQ;
 
   return timer.getTime();
 }

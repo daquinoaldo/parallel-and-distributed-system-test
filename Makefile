@@ -24,7 +24,7 @@ valgrind-debug: debug
 					--track-origins=yes \
 					--verbose \
 					--log-file=valgrind-out.txt \
-					./skyline-debug
+					./skyline-debug #parallel 42 3 2 1 5
 
 infer: clean
 	infer -- cmake -B cmake-build

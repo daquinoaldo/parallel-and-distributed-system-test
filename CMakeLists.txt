@@ -15,7 +15,8 @@ else ()
 endif ()
 
 # Debug flags for all
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG -g -pg")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG -g")
+#set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -pg")  # profiler
 
 if(NOT CMAKE_BUILD_TYPE)	
   set(CMAKE_BUILD_TYPE Release)	
