@@ -61,7 +61,7 @@ long parallel(Stream* inputStream, bool v, unsigned nw) {
 
   // collector
   auto collector = new std::thread([&v, &outputQueue, &EOQ, &isEOQ, &nw]() {
-    auto EOQ_count = 0;
+    unsigned EOQ_count = 0;
     // wait for all the workers to end
     while (EOQ_count < nw) {
       auto skyline = outputQueue.pop();

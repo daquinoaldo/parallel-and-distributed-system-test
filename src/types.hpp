@@ -34,12 +34,16 @@ private:
   ulong w_num;
 
 public:
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wconversion"
+  #pragma GCC diagnostic ignored "-Wfloat-conversion"
   Stream(const ulong &__a, const ulong &w_size, const ulong &t_size, const ulong &sliding_f):
         std::vector<Tuple*>(__a), w(w_size), k(sliding_f), w_num(floor((size() - w) / k) + 1) {
     // fill the stream with tuple
     for (ulong i = 0; i < size(); i++)
       at(i) = new Tuple(t_size);
   }
+  #pragma GCC diagnostic pop
 
   ~Stream() {
     for (ulong i = 0; i < size(); i++)

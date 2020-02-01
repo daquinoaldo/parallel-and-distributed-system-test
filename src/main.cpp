@@ -7,10 +7,10 @@
 #include "fastflow.hpp"
 
 void help();
-void autopilot(Stream* inputStream, bool v, unsigned max_nw, unsigned nt);
+void autopilot(Stream* inputStream, bool v, unsigned max_nw);
 
 
-void autopilot(Stream* inputStream, bool v, unsigned max_nw, unsigned nt) {
+void autopilot(Stream* inputStream, bool v, unsigned max_nw) {
   unsigned long seq;
   unsigned limit = (unsigned) floor(log2(max_nw));
 
@@ -33,7 +33,7 @@ void autopilot(Stream* inputStream, bool v, unsigned max_nw, unsigned nt) {
   for (unsigned i = 0; i <= limit; i++) {
     unsigned nw = (unsigned) pow(2, i);
     std::cout << std::endl << "Emitter-collector with " << nw << " threads."<< std::endl;
-    emitterCollectorTimes[i] = 0;//emitterCollector(inputStream, v, nw, nt);
+    emitterCollectorTimes[i] = 0;//emitterCollector(inputStream, v, nw);
   }
 
   // run fastflow
@@ -76,7 +76,7 @@ void autopilot(Stream* inputStream, bool v, unsigned max_nw, unsigned nt) {
 
 void help() {
   std::cout << std::endl;
-  std::cout << "Usage: skyline mode s w t k l [nw [nt]]" << std::endl;
+  std::cout << "Usage: skyline mode s w t k l [nw]" << std::endl;
   std::cout << "mode = auto, sequential, parallel, emitter-collector, fastflow" << std::endl;
   std::cout << "s = seed for random numbers" << std::endl;
   std::cout << "w = window size" << std::endl;
@@ -85,13 +85,10 @@ void help() {
   std::cout << "l = stream length" << std::endl;
   std::cout << "v = verbose (0 to suppress print, 1 to show)" << std::endl;
   std::cout << "nw = number of worker (default: hardware concurrency)" << std::endl;
-  std::cout << "nt = number of task at a time assigned to the worker (default: 1)" << std::endl;
   std::cout << std::endl;
 }
 
 
-// TODO: pointer vs references: a references produced a deep copy
-// TODO: all pointers must be deallocated explicitly with delete
 int main(int argc, char *argv[]) {
   // help message
   if (argc == 2 && (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0)) {
@@ -114,7 +111,6 @@ int main(int argc, char *argv[]) {
   auto l = argc >= 7 ? (unsigned long) atol(argv[6]) : 1000;                // stream length
   auto v = argc >= 8 ? (bool) atoi(argv[7]) : false;                          // verbose
   auto nw = argc >= 9 ? (unsigned) atoi(argv[8]) : concurentThreadsSupported; // number of workers
-  auto nt = argc == 10 ? (unsigned) atoi(argv[9]) : 1;                        // task at a time per worker
 
   // init rand with a seed
   srand(s);
@@ -127,7 +123,7 @@ int main(int argc, char *argv[]) {
   // run the chosen mode
   if (strcmp(mode, "auto") == 0) {
     std::cout << "[Main]\tRunning in autopilot mode." << std::endl;
-    autopilot(inputStream, v, nw, nt);
+    autopilot(inputStream, v, nw);
   }
   else if (strcmp(mode, "sequential") == 0) {
     std::cout << "[Main]\tRunning in sequential mode." << std::endl;
@@ -139,7 +135,7 @@ int main(int argc, char *argv[]) {
   }
   else if (strcmp(mode, "emitter-collector") == 0) {
     std::cout << "[Main]\tRunning in emitter-collector mode." << std::endl;
-    //emitterCollector(inputStream, v, nw, nt);
+    //emitterCollector(inputStream, v, nw);
   }
   else if (strcmp(mode, "fastflow") == 0) {
     std::cout << "[Main]\tRunning in fastflow mode." << std::endl;
@@ -158,14 +154,3 @@ int main(int argc, char *argv[]) {
 
 // TODO: Still not scale. Try to figure out why with a profiler.
 // Try also parallel picking more than one window per time.
-// Try also using pointers instead of copy.
-
-
-// FF time
-// 1: 404067
-// 2: 220247
-// 4: 129758
-// 8:  80376
-// 16: 46564
-// 32: 64438
-// 64: 80502
