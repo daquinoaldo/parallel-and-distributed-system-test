@@ -27,6 +27,8 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 add_executable(skyline
   src/main.cpp
+  src/sequential.hpp
+  src/parallel.hpp
   src/fastflow.hpp
   src/types.hpp
   src/Utils.hpp

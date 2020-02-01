@@ -35,5 +35,3 @@ skyline
 valgrind-out.txt
 gmon.out
 infer-out
-
-src-BAK
