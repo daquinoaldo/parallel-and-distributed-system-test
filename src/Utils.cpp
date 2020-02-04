@@ -16,57 +16,58 @@ std::string Utils::serializeWindow(std::vector<Tuple*>* window) {
 
 short Utils::compareTuple(Tuple* ti, Tuple* tj) {
   unsigned long k = 0;
-  bool allLT = true;
-  bool allGT = true;
-  // Scan each component, stop if them don't eliminate themselves:
-  while (k < ti->size() && (allLT || allGT)) {
-    // if is bigger, this tuple has not each component less than the other tuple;
-    if (ti->at(k) > tj->at(k)) {
-      allLT = false;
-      k++;
+  bool all_j_let_i = true;
+  bool all_j_get_i = true;
+  bool one_j_lt_i = false;
+  bool one_j_gt_i = false;
+  // scan each component until there is hope for one of the tuple to dominate the other
+  while (k < ti->size() && (all_j_let_i || all_j_get_i)) {
+    // if there is an element of the tuple j greater than the corresponding element of the tuple i:
+    // not all the element of j are lower or equal than the corresponding element of the tuple i
+    // there is an the element of j greater than the corresponding element of the tuple i
+    if (tj->at(k) > ti->at(k)) {
+      all_j_let_i = false;
+      one_j_gt_i = true;
     }
-      // if is smaller, this tuple has not each component greater than the other tuple;
-    else if (ti->at(k) < tj->at(k)) {
-      allGT = false;
-      k++;
+    // vice-versa
+    if (tj->at(k) < ti->at(k)) {
+      all_j_get_i = false;
+      one_j_lt_i = true;
     }
-      // else them are equals, so is neither GT nor LT.
-    else {
-      allLT = false;
-      allGT = false;
-    }
+    k++;
   }
-  if (allLT) return -1;
-  else if (allGT) return 1;
+  // i dominates j if all the j are lower or equal than the corresponding i
+  // and at least one j is strictly lower than the corresponding i
+  if (all_j_let_i && one_j_lt_i) return -1;
+  // vice-versa
+  if (all_j_get_i && one_j_gt_i) return 1;
+  // else no tuple dominates
   return 0;
 }
 
 
-// FIXME: wrong skyline
 Skyline* Utils::processWindow(Window* window) {
   // save which tuple keep and which not
   std::vector<bool> keep(window->size());
   for (unsigned long i = 0; i < keep.size(); i++)
     keep[i] = true;
-
-  // foreach tuple check if survive and which tuple eliminates
+  
+  // compare tuple and check which survive
   for (unsigned long i = 0; i < window->size(); i++) {
     unsigned long j = i + 1;
     // Compares it with the subsequent elements.
     // Continue while is not deleted, since in that case all the tuple that this one will delete
     // are already deleted or will be deleted by the one that have deleted this one.
     while (keep[i] && j < window->size()) {
-      if (!keep[j]) continue; // already deleted, continue.
-      // checking if each tuple component of the first tuple is less or greater than
-      // the corresponding component of the other tuple.
-      short cmp = compareTuple(window->at(i), window->at(i));
-      // If the first tuple has each component strictly less than the corresponding component of the second one,
-      // the first tuple eliminates the second one.
-      if (cmp < 0) keep[j] = false;
-      // Vice-versa, if each component of the first one is strictly greater than the corresponding one
-      // of the second tuple, the second tuple eliminates the first one.
-      else if (cmp > 0) keep[i] = false;
-      // Else, them remains both on the window, since them are still candidates for the skyline.
+      if (!keep[j]) {
+        // already deleted, continue.
+        j++;
+        continue;
+      }
+      short cmp = compareTuple(window->at(i), window->at(j));
+      if (cmp < 0) keep[j] = false;  // i dominates
+      if (cmp > 0) keep[i] = false;  // j dominates
+      // else, them remains both on the window, since them are still candidates for the skyline.
       j++;
     }
   }
