@@ -1,0 +1,47 @@
+\documentclass[12pt]{article}                  % type of document
+\usepackage[utf8]{inputenc}                    % encoding (UTF-8)
+\usepackage{authblk}                           % title page affil
+\usepackage{geometry}                          % margins
+\usepackage{graphicx}                          % image extension package
+\usepackage{float}                             % image extension package
+\usepackage{tikz}                              % diagrams
+\usepackage[font=small,labelfont=bf]{caption}  % captions
+
+% margins
+\geometry{
+    a4paper,
+    top=3cm,
+    bottom=2cm,
+    left=2.5cm,
+    right=2cm
+}
+
+\linespread{1.15}
+
+\title{Skyline parallelization report}
+\author{Aldo D'Aquino}
+\affil{Parallel and Distributed Systems: Paradigms and Models \\ Master Degree in Computer Science - Pisa University \\ a.y. 2018-19}
+\date{\today}
+
+
+% document structure
+\begin{document}
+
+    \maketitle              % cover page
+    \thispagestyle{empty}   % no page number
+    \clearpage              % only the title in that page
+    
+    \tableofcontents        % index
+    \thispagestyle{empty}   % no page number
+    
+    \setcounter{page}{0}    % reset page number to start from first chapter with 1
+    
+    % chapters
+    \include{introduction}
+    \include{par_arch_design}
+    \include{perf_modeling}
+    \include{implementation}
+    \include{validation}
+    \include{conclusion}
+
+\end{document}

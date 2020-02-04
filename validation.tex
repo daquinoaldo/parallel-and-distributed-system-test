@@ -1,0 +1,52 @@
+\section{Experimental validation}
+Tests are executed on the Intel Xeon Phi KNC, with 64 physical cores with a four-way multithread support each, for a total of 256 threads.
+
+For the text we have prepared an \textit{auto} mode that automatically runs the benchmarks for the provided input values. It runs the sequential, parallel and fastflow version, and for the latter two runs test with an increasing number of workers. At the end of the execution, the automatic mode provides a summary of the timestamps, in addition to those printed during the execution.
+
+The time of each test is expressed in millisecond. Each timestamp provided in this document represent the averages of the timestamps of 5 tests performed with the same parameters.
+
+
+
+\subsection{Sequential algorithm}
+The sequential version with a window size $w = 100$, a tuple size $t = 10$, a sliding factor $k = 1$ and a stream length $l = 100000$ takes $\sim 24000 \ msec$ on the Intel Xeon Phi.
+
+\bigskip\noindent
+We also computed the partial times, measuring the time spent in the single operations with this parameter. We implemented the print as a delete of the skyline, since the actual print on standard out or file takes a very long time and is not scalable, hence we found it less interesting to be considered.
+
+\medskip\noindent
+Pick the windows from the stream: $\sim 88 \ msec$, i.e. $\sim 0.88 \ \mu sec$ each, i.e. $\sim 0,36\%$.\\
+Process the windows: $\sim 24000 \ msec$, i.e. $\sim 240 \ \mu sec$ each, i.e. $\sim 99,39\%$.\\
+Delete the skylines: $\sim 60 \ msec$, i.e. $\sim 0.6 \ \mu sec$ each, i.e. $\sim 0,25\%$.\\
+
+\bigskip\noindent
+Process a window takes $\sim 272$ times the time to pick it and $\sim 400$ times the time needed to delete the corresponding skyline. Since the Intel Xeon Phi supports up to 256 cores, we should be able to sped up the application by scaling on the second step, i.e. the computation of the skyline.
+
+
+
+\subsection{Running times}
+\begin{table}[]
+\centering
+\begin{tabular}{|l|c|r|r|r|}
+\hline
+\multicolumn{1}{|c|}{} & nw & \multicolumn{1}{c|}{w = 128} & \multicolumn{1}{c|}{w = 256} & \multicolumn{1}{c|}{w = 512} \\ \hline
+Sequential & 1   & 4970262 & 18585713 &  \\ \hline
+Parallel   & 1   & 5343199 & 19621995 &  \\ \hline
+Parallel   & 2   & 2680228 & 9903538  &  \\ \hline
+Parallel   & 4   & 1334705 & 4939809  &  \\ \hline
+Parallel   & 8   & 668252  & 2480417  &  \\ \hline
+Parallel   & 16  & 344069  & 1244297  &  \\ \hline
+Parallel   & 32  & 199679  & 632766   &  \\ \hline
+Parallel   & 64  & 119624  & 405146   &  \\ \hline
+Parallel   & 128 & 193414  & 290523   &  \\ \hline
+Parallel   & 256 & 200697  & 246579   &  \\ \hline
+Fastflow   & 1   & 5279013 & 19650859 &  \\ \hline
+Fastflow   & 2   & 2654387 & 9842083  &  \\ \hline
+Fastflow   & 4   & 1331611 & 4940133  &  \\ \hline
+Fastflow   & 8   & 671599  & 2481758  &  \\ \hline
+Fastflow   & 16  & 342098  & 1242880  &  \\ \hline
+Fastflow   & 32  & 200525  & 637487   &  \\ \hline
+Fastflow   & 64  & 168367  & 557349   &  \\ \hline
+Fastflow   & 128 & 149153  & 443139   &  \\ \hline
+Fastflow   & 256 & 478662  & 670081   &  \\ \hline
+\end{tabular}
+\end{table}

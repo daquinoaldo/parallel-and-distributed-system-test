@@ -1,0 +1,27 @@
+\section{Implementation structure and details}
+
+\subsection{Sequential version}
+For the sequential version we don't use any particular data structure, except for the \texttt{inputStream}, that is a class that extends a vector with a \texttt{pickWindow(i)} function and a constructor that automatically generates the tuples in the stream. The \texttt{inputStream} is allocated and initialized before running the sequential version and deallocated after, so its cost is not included in the timestamps.
+
+
+
+\subsection{Parallel version}
+\subsubsection{Threads}
+We have a thread called \textit{emitter} that calls the \texttt{pickWindow(i)} method of the stream and pushes the windows to the workers. The $nw$ \textit{workers} pop a window, compute the skyline and push the result to the collector. The \textit{collector} pop and consume the skylines coming from the workers.
+
+\subsubsection{Communication}
+The communication in implemented with two queue: the \texttt{inputQueue}, shared between the \textit{emitter} and the \textit{workers}, and the \texttt{outputQueue}, shared between the \textit{workers} and the \textit{collector}.
+
+\subsubsection{Synchronization}
+The \texttt{inputStream} is accessed only by the \textit{emitter}, hence doesn't need a mutual exclusion.
+
+The \texttt{Queue} class internally uses a \texttt{deque} and integrates the lock mechanisms. The lock is taken before popping from or pushing values to the \texttt{deque}. Also, a condition variables await for item in \texttt{deque} before performing a pop, and releases the lock during the wait. Eventually, a \texttt{notify\_one} on the condition variable will be performed after a push.
+
+The \texttt{EOQ} element notify the next thread (or threads) in the pipeline of the end of the tasks.
+
+
+
+\subsection{FastFlow version}
+This version is implemented with a \texttt{ff\_Pipe} of a \texttt{ff\_node\_t} emitter, a \texttt{ff\_Farm} of $nw$ \texttt{ff\_node\_t} workers and another \texttt{ff\_node\_t} collector.
+
+All the locks, data structures and synchronization method are handled by \textit{FastFlow}.

@@ -1,0 +1,94 @@
+\section{Performance modeling}
+
+In order to theoretically model the performances of the skyline algorithm, we have to consider those input values:
+\begin{itemize}
+    \item $w$ the window size, i.e. the number of tuple inside a window;
+    \item $t$ the tuple size, i.e. the number of element inside a tuple;
+    \item $k$ the sliding factor, that means that $window_{i+1}$ starts $k$ tuples after $window_i$;
+    \item $l$ the stream length, i.e. the number of tuple inside the input stream;
+    \item $nw$ the number of workers.
+    \item $w\_no$ the number of windows, can be computed from the window size, the stream length and the sliding factor: $\lfloor\frac{l-w}{k}\rfloor+1$.
+\end{itemize}
+
+\bigskip\noindent
+From this values we can derive the following costs:
+\begin{itemize}
+    \item $T_{extract\ item}$ the time to extract one item from the the input stream;
+    \item $T_{extract\ window}$ the time to extract one window from the the input stream, that is $T_{extract\ item} \cdot w$;
+    \item $T_{extract}$ the time to extract all the windows from the the input stream, that is $T_{extract\ item} \cdot w\_no$;
+    \item $T_{compare\ items}$ the time to compare two items of two different tuple;
+    \item $T_{compare\ tuples}$ the time to compare two tuple, that is $T_{compare\ items} \cdot \mathcal{O}(t)$ (is an upper bound since the optimized algorithm doesn't need to compare all the items if none of the tuple can dominate the other just after two item);
+    \item $T_{compute\ window}$ the time to compute the skyline of a window, that is $T_{compare\ tuples} \cdot O(w)$ (is an upper bound since the optimized algorithm doesn't need to compare two tuple if one of them is already dominated by another one);
+    \item $T_{compute}$ the time to compute the skyline of all the windows, that is $T_{compute\ window} \cdot w\_no$;
+    \item $T_{consume\ skyline}$ the time to print and delete the skyline;
+    \item $T_{consume}$ the time to print and delete all the skylines, that is $T_{consume\ skyline} \cdot w\_no$.
+\end{itemize}
+
+
+\subsection{Sequential algorithm}
+The sequential algorithm picks a window from the input stream, computes and prints the skyline.
+
+\begin{verbatim}
+sequential(inputStream) {
+    for (int i = 0 to #window) {
+        window = inputStream.getWindow(i);
+        skyline = compute_skyline(window);
+        print(skyline);
+    }
+}
+\end{verbatim}
+
+\noindent
+Therefore, the cost of the sequential algorithm is $T_{extract} +  T_{compute} + T_{consume}$.
+
+
+\subsection{Parallel algorithm}
+For the sake of simplicity, in the analysis we assume that the number of window $w\_no$ is a multiple of $nw$. Since the time to compute the skyline of a window can differ, we assume also that on average the time for computing the skylines of the assigned windows is more or less the same for each worker.
+
+\bigskip\noindent
+The cost of the parallel algorithm is $T_{extract} +  \frac{T_{compute}}{nw} + T_{consume}$, plus the overhead cost of the additional data structures and locks.
+
+\bigskip\noindent
+The ideal situation is the one in which $T_{extract} = \frac{T_{compute}}{nw} = T_{consume}$.
+We reach the maximum scalability when $\frac{T_{compute}}{nw} = max(T_{extract}, T_{consume})$.
+
+\bigskip\noindent
+If we want to take into account the overhead, we need to introduce the following costs:
+\begin{itemize}
+    \item $T_{push\ window}$ the time to push one window into a queue;
+    \item $T_{pop\ window}$ the time to pop an window from a queue;
+    \item $T_{push}$ the time to push all the window into a queue, that is $T_{push\ window} \cdot w\_no$;
+    \item $T_{pop}$ the time to pop all the window from a queue, that is $T_{pop\ window} \cdot w\_no$.
+\end{itemize}
+
+\noindent
+Hence, the cost of the parallel algorithm including the overhead is the following.
+\begin{center}
+    $T_{extract} + T_{push} +
+    \frac{T_{pop} + T_{compute} + T_{push}}{nw} +
+    T_{consume} + T_{pop}$
+\end{center}
+
+\noindent
+From  this formula we can easily see how much the application can scale. We stop gain when the threads have to wait to acquire the lock. This happen roughly when the thread have finished his bunch of work before all the other thread have done the pop to take their task, and in the same way on the output queue.\\
+This occurs in one of the following case:
+\begin{center}
+    $T_{compute\ window} + T_{push\ window} < T_{pop\ window} \cdot nw$ \\
+    $T_{pop\ window} + T_{compute\ window} < T_{push\ window} \cdot nw$
+\end{center}
+that is
+\begin{center}
+    $T_{compute\ window} < T_{pop\ window} \cdot nw - T_{push\ window}$ \\
+    $T_{compute\ window} < T_{push\ window} \cdot nw - T_{pop\ window}$
+\end{center}
+and since
+\begin{center}
+    $T_{pop\ window} \cdot nw - T_{push\ window} \approx max(T_{pop\ window}, T_{push\ window}) \cdot nw - 1 \approx T_{push\ window} \cdot nw - T_{pop\ window}$
+\end{center}
+we obtain the following formula.
+\begin{center}
+    $T_{compute\ window} < max(T_{pop\ window}, T_{push\ window}) \cdot nw - 1$
+\end{center}
+
+\bigskip\noindent
+Therefore, we can understand that the scalability depends on the number $w$ of tuple per window and on the number $t$ of item per tuple. Anyway, since both $T_{compute\ window}$ and $T_{compare\ tuples}$ definitions contain a $O$ notation, we expect this relation to not be linear, to be instead similar to a logarithmic function.

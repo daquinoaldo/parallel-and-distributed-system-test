@@ -1,0 +1,19 @@
+\section{Parallel architecture design}
+
+The parallel version consists in a pipeline of three steps:
+\begin{enumerate}
+    \item pick one by one the windows from the input stream and pushes them in an input queue;
+    \item pops the tasks from the input queue, compute the skyline of the windows and pushes the skylines in an output queue;
+    \item pops and consumes skylines from the output queue.
+\end{enumerate}
+
+\noindent
+Since the second step is the one that can scale, it can also be seen as an emitter that picks the windows, a set of workers that compute the skylines and a collector that consumes the skylines.
+
+\bigskip\noindent
+\begin{figure}[h]
+    \centering
+    \input{diagrams/parallel}
+    \bigskip
+    \captionof{figure}{Parallel architecture diagram}
+\end{figure}

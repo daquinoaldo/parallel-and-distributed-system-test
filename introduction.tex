@@ -1,0 +1,39 @@
+\section{Introduction}
+The aim of the \textit{Parallel and Distributed Systems: Paradigms and Models} course is to learn a mix of foundations and advanced knowledge in the field of parallel computing specifically targeting data intensive applications. 
+
+During the course were presented the principles of parallel computing, including measures characterizing parallel computations, mechanisms and policies supporting parallel computing and typical data intensive patterns.
+
+In this final project we analyse an application and design a parallel implementation of the algorithm, by comparing different design patterns and alternative parallelization strategies and techniques.
+
+We have chosen the Skyline application, for which we provide a sequential version, a parallel version implemented with C++ threads and a parallel version based on the \textit{FastFlow} framework developed by the Computer Science department of Pisa University.
+
+In this report we provide the benchmark of each implementation, and we discuss the scalability of the system and the possible bottleneck and hardware limits.
+
+\subsection{Skyline algorithm}
+The target is to develop an application computing the skyline of a stream of tuples. We consider tuples
+made of $t$ items. Items at position $i$ have type $type_i$. For each $type_i$, an order is defined by a $>_i$ relation. A tuple $t_1 = <x_1, ... , x_t>$ dominates another tuple $t_2 = <y_1, ... , y_t>$ if and only if at least one component $x_i$ of $t_1$ is better than the corresponding component $y_i$ of $t_2$ (i.e. $x_i >_i y_i$) and all the other components of $t_1$ (i.e. all the $x_j$ such that $j \neq i$) are better or equal (i.e. either $x_j >_j y_j$ or $x_j =_j y_j$). The skyline of a set of tuples is the set of tuples that are not dominated by any other tuple.
+
+The skyline stream application considers a (possibly infinite) stream of tuples. For each window of size $w$ ($w$ consecutive tuples), the application computes the skyline and outputs the skyline onto the output stream. Consecutive windows differ by exactly $k$ item (sliding factor).
+
+\bigskip\noindent
+Our implementation implement the skyline application in a simplified way, as follows.
+
+The stream, that is not part of the application, has a fixed length of $l$. It is made of $l$ tuples of $t$ integers each. The $>_i$ relation is the same for all the $t$ items of the tuple, and is exactly the $>$ relation between integers. A tuple $t_1 = <x_1, ... , x_t>$ dominates another tuple $t_2 = <y_1, ... , y_t>$ if and only if $\forall i \in [1, t] \ x_i \geq y_i$ and $\exists i \in [1, t] \ x_i > y_i$.
+
+Each window has a fixed length $w$, hence from the stream are extracted $\lfloor\frac{l-w}{k}\rfloor+1$ windows of $w$ tuple, where $l$ is the size of stream and $k$ the sliding factor.
+
+\bigskip\noindent
+Here there is an example stream, the windows that will be generated and the resulting skylines.
+
+\medskip\noindent
+Parameters: $l = 10$, $w = 3$, $t = 2$, $k = 1$. \medskip \\
+Stream: $<66,40>, <81,41>, <12,58>, <21,40>, <35,43>, <74,43>, <17,4>, <96,62>, <92,48>, <98,59>$ \medskip \\
+Window 0: $<66,40>, <81,41>, <12,58>$ \\
+Skyline 0: $<81,41>, <12,58>$ \medskip \\
+Window 1: $<81,41>, <12,58>, <21,40>$ \\
+Skyline 1: $<81,41>, <12,58>$ \medskip \\
+Window 2: $<12,58>, <21,40>, <35,43>$ \\
+Skyline 2: $<12,58>, <35,43>$ \smallskip \\
+... \smallskip \\
+Window 7: $<96,62>, <92,48>, <98,59>$ \\
+Skyline 7: $<96,62>, <98,59>$

@@ -1,0 +1,42 @@
+\usetikzlibrary{shapes, arrows}
+
+
+\tikzstyle{block} = [draw, node distance=3cm, rectangle, minimum height=3em, minimum width=6em]
+\tikzstyle{node} = [draw, node distance=3cm, circle]
+
+\begin{tikzpicture}
+\begin{scope}[scale=0.9, transform shape]
+    % inputStream
+    \node [node, label={inputStream}] (inputStream) {};
+    
+    % emitter
+    \node [block, right of=inputStream] (emitter) {emitter};
+    \draw [->] (inputStream) -- (emitter);
+    
+    %inputQueue
+    \node [node, right of=emitter, label={inputQueue}] (inputQueue) {};
+    \draw [->] (emitter) -- (inputQueue);
+    
+    %worker i
+    \node [block, right of=inputQueue] (worker_i) {worker $i$};
+    \draw [->] (inputQueue) -- (worker_i);
+    
+    %worker 1
+    \node [block, above of=worker_i] (worker_1) {worker $1$};
+    \draw [->] (inputQueue) -- (worker_1);
+
+    %worker nw
+    \node [block, below of=worker_i] (worker_nw) {worker $nw$};
+    \draw [->] (inputQueue) -- (worker_nw);
+    
+    % outputQueue
+    \node [node, right of=worker_i, label={outputQueue}] (outputQueue) {};
+    \draw [->] (worker_i) -- (outputQueue);
+    \draw [->] (worker_1) -- (outputQueue);
+    \draw [->] (worker_nw) -- (outputQueue);
+    
+    % collector
+    \node [block, right of=outputQueue] (collector) {collector};
+    \draw [->] (outputQueue) -- (collector);
+\end{scope}
+\end{tikzpicture}
