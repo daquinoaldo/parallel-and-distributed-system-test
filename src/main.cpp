@@ -28,15 +28,6 @@ void autopilot(Stream* inputStream, bool v, unsigned max_nw) {
     std::cout << std::endl << "Parallel with " << nw << " threads."<< std::endl;
     parallelTimes[i] = parallel(inputStream, v, nw);
   }
-
-  // run emitter-collector
-  std::vector<unsigned long> emitterCollectorTimes(limit + 1);
-  for (unsigned i = 0; i <= limit; i++) {
-    unsigned nw = (unsigned) pow(2, i);
-    std::cout << std::endl << "Emitter-collector with " << nw << " threads."<< std::endl;
-    emitterCollectorTimes[i] = 0;//emitterCollector(inputStream, v, nw);
-  }
-
   // run fastflow
   std::vector<unsigned long> fastflowTimes(limit + 1);
   for (unsigned i = 0; i <= limit; i++) {
@@ -57,12 +48,6 @@ void autopilot(Stream* inputStream, bool v, unsigned max_nw) {
   for (unsigned i = 0; i <= limit; i++) {
     unsigned nw = (unsigned) pow (2, i);
     std::cout << "Parallel " << nw << " threads:\t" << parallelTimes[i] << std::endl;
-  }
-
-  // emitter-collector
-  for (unsigned i = 0; i <= limit; i++) {
-    unsigned nw = (unsigned) pow (2, i);
-    std::cout << "Emitter-collector " << nw << " threads:\t" << emitterCollectorTimes[i] << std::endl;
   }
 
   // fastflow
@@ -158,24 +143,3 @@ int main(int argc, char *argv[]) {
 // TODO: It scales only with large windows, i.e. when the task for each worker is very high.
 // - try to use a profiler
 // - try parallel picking more than one window per time
-
-// TIMES ./skyline auto 42 1000 10 1 100000 0 256
-// Sequential:             308702677
-// Parallel 1 threads:     312465737
-// Parallel 2 threads:     162823516
-// Parallel 4 threads:      81443014
-// Parallel 8 threads:      41193086
-// Parallel 16 threads:     22381938
-// Parallel 32 threads:     11705852
-// Parallel 64 threads:      6181175
-// Parallel 128 threads:     5501195
-// Parallel 256 threads:     5219642
-// Fastflow 1 threads:     324519100
-// Fastflow 2 threads:     162298761
-// Fastflow 4 threads:      81268418
-// Fastflow 8 threads:      40669155
-// Fastflow 16 threads:     20387590
-// Fastflow 32 threads:     10261423
-// Fastflow 64 threads:      9854903
-// Fastflow 128 threads:     8298919
-// Fastflow 256 threads:     7288061

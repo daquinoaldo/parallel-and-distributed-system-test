@@ -1,0 +1,117 @@
+./skyline auto 42 128 10 1 12927 0 256
+
+Sequential:             4970262
+Parallel 1 threads:     5343199
+Parallel 2 threads:     2680228
+Parallel 4 threads:     1334705
+Parallel 8 threads:     668252
+Parallel 16 threads:    344069
+Parallel 32 threads:    199679
+Parallel 64 threads:    119624
+Parallel 128 threads:   193414
+Parallel 256 threads:   200697
+Fastflow 1 threads:     5279013
+Fastflow 2 threads:     2654387
+Fastflow 4 threads:     1331611
+Fastflow 8 threads:     671599
+Fastflow 16 threads:    342098
+Fastflow 32 threads:    200525
+Fastflow 64 threads:    168367
+Fastflow 128 threads:   149153
+Fastflow 256 threads:   478662
+
+
+
+./skyline auto 42 256 10 1 13055 0 256
+
+Sequential:             18585713
+Parallel 1 threads:     19621995
+Parallel 2 threads:     9903538
+Parallel 4 threads:     4939809
+Parallel 8 threads:     2480417
+Parallel 16 threads:    1244297
+Parallel 32 threads:    632766
+Parallel 64 threads:    405146
+Parallel 128 threads:   290523
+Parallel 256 threads:   246579
+Fastflow 1 threads:     19650859
+Fastflow 2 threads:     9842083
+Fastflow 4 threads:     4940133
+Fastflow 8 threads:     2481758
+Fastflow 16 threads:    1242880
+Fastflow 32 threads:    637487
+Fastflow 64 threads:    557349
+Fastflow 128 threads:   443139
+Fastflow 256 threads:   670081
+
+
+
+./skyline auto 42 512 10 1 13311 0 256
+
+Sequential:             68950202
+Parallel 1 threads:     70448451
+Parallel 2 threads:     36605589
+Parallel 4 threads:     18432914
+Parallel 8 threads:     9186436
+Parallel 16 threads:    4591405
+Parallel 32 threads:    2307841
+Parallel 64 threads:    1362731
+Parallel 128 threads:   950836
+Parallel 256 threads:   797835
+Fastflow 1 threads:     72988778
+Fastflow 2 threads:     36545246
+Fastflow 4 threads:     18263974
+Fastflow 8 threads:     9156595
+Fastflow 16 threads:    4613028
+Fastflow 32 threads:    2340830
+Fastflow 64 threads:    2012049
+Fastflow 128 threads:   1488754
+Fastflow 256 threads:   1209638
+
+
+
+./skyline auto 42 1024 10 1 13823 0 256
+
+Sequential:             258524148
+Parallel 1 threads:     257031126
+Parallel 2 threads:     134886437
+Parallel 4 threads:     67388771
+Parallel 8 threads:     33835748
+Parallel 16 threads:    16792859
+Parallel 32 threads:    8501624
+Parallel 64 threads:    4413848
+Parallel 128 threads:   3220670
+Parallel 256 threads:   2700211
+Fastflow 1 threads:     267977425
+Fastflow 2 threads:     134163459
+Fastflow 4 threads:     67077633
+Fastflow 8 threads:     33563912
+Fastflow 16 threads:    16901159
+Fastflow 32 threads:    8449103
+Fastflow 64 threads:    7253576
+Fastflow 128 threads:   5066831
+Fastflow 256 threads:   3929258
+
+
+
+./skyline auto 42 2048 10 1 14847 0 256
+
+Sequential:             897301533
+Parallel 1 threads:     898974927
+Parallel 2 threads:     475516158
+Parallel 4 threads:     237680980
+Parallel 8 threads:     120349829
+Parallel 16 threads:    59501326
+Parallel 32 threads:    30764311
+Parallel 64 threads:    15859510
+Parallel 128 threads:   11374157
+Parallel 256 threads:   9327988
+Fastflow 1 threads:     952241207
+Fastflow 2 threads:     475243530
+Fastflow 4 threads:     237621958
+Fastflow 8 threads:     118830059
+Fastflow 16 threads:    59797504
+Fastflow 32 threads:    30362855
+Fastflow 64 threads:    25046960
+Fastflow 128 threads:   17368437
+Fastflow 256 threads:   13397304
