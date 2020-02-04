@@ -41,6 +41,8 @@ short Utils::compareTuple(Tuple* ti, Tuple* tj) {
   return 0;
 }
 
+
+// FIXME: wrong skyline
 Skyline* Utils::processWindow(Window* window) {
   // save which tuple keep and which not
   std::vector<bool> keep(window->size());

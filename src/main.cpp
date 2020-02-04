@@ -118,29 +118,30 @@ int main(int argc, char *argv[]) {
 
   // generate input stream
   auto inputStream = new Stream(l, w, t, k);
-  std::cout <<"[Main]\tExpected windows: " << inputStream->w_no() << std::endl << std::endl;
+  std::cout <<"[Main] Expected windows: " << inputStream->w_no() << std::endl << std::endl;
   if (v) std::cout << "Stream: " << Utils::serializeWindow(inputStream) << std::endl;
 
 
   // run the chosen mode
   if (strcmp(mode, "auto") == 0) {
-    std::cout << "[Main]\tRunning in autopilot mode." << std::endl;
+    std::cout << "[Main] Running in autopilot mode." << std::endl;
     autopilot(inputStream, v, nw);
   }
   else if (strcmp(mode, "sequential") == 0) {
-    std::cout << "[Main]\tRunning in sequential mode." << std::endl;
+    std::cout << "[Main] Running in sequential mode." << std::endl;
     sequential(inputStream, v);
+    sequentialTimes(inputStream);
   }
   else if (strcmp(mode, "parallel") == 0) {
-    std::cout << "[Main]\tRunning in parallel mode." << std::endl;
+    std::cout << "[Main] Running in parallel mode." << std::endl;
     parallel(inputStream, v, nw);
   }
   else if (strcmp(mode, "emitter-collector") == 0) {
-    std::cout << "[Main]\tRunning in emitter-collector mode." << std::endl;
+    std::cout << "[Main] Running in emitter-collector mode." << std::endl;
     //emitterCollector(inputStream, v, nw);
   }
   else if (strcmp(mode, "fastflow") == 0) {
-    std::cout << "[Main]\tRunning in fastflow mode." << std::endl;
+    std::cout << "[Main] Running in fastflow mode." << std::endl;
     fastflow(inputStream, v, nw);
   }
   else {  // invalid mode
