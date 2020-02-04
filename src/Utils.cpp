@@ -7,7 +7,7 @@ std::string Utils::serializeTuple(Tuple* tuple) {
   return string;
 }
 
-std::string Utils::serializeWindow(Window* window) {
+std::string Utils::serializeWindow(std::vector<Tuple*>* window) {
   std::string string = "[";
   for (unsigned long i = 0; i < window->size(); i++)
     string += serializeTuple(window->at(i)) + (i != window->size() - 1 ? ", " : "]");

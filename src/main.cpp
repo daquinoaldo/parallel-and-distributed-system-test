@@ -119,6 +119,7 @@ int main(int argc, char *argv[]) {
   // generate input stream
   auto inputStream = new Stream(l, w, t, k);
   std::cout <<"[Main]\tExpected windows: " << inputStream->w_no() << std::endl << std::endl;
+  if (v) std::cout << "Stream: " << Utils::serializeWindow(inputStream) << std::endl;
 
 
   // run the chosen mode
@@ -128,7 +129,7 @@ int main(int argc, char *argv[]) {
   }
   else if (strcmp(mode, "sequential") == 0) {
     std::cout << "[Main]\tRunning in sequential mode." << std::endl;
-    //sequential(inputStream, v);
+    sequential(inputStream, v);
   }
   else if (strcmp(mode, "parallel") == 0) {
     std::cout << "[Main]\tRunning in parallel mode." << std::endl;

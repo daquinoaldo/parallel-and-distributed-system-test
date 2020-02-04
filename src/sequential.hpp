@@ -9,7 +9,7 @@ long sequential(Stream* inputStream, bool v) {
     auto window = inputStream->pickWindow(i);
     if (v) std::cout << "Window " << i << ": " << Utils::serializeWindow(window) << std::endl;
     auto skyline = Utils::processWindow(window);
-    if (v) std::cout << "[Skyline " << skyline->id() << ": " << Utils::serializeWindow(skyline) << std::endl;
+    if (v) std::cout << "Skyline " << skyline->id() << ": " << Utils::serializeWindow(skyline) << std::endl;
     delete skyline;
   }
 

@@ -12,7 +12,7 @@ private:
 
 public:
   static std::string serializeTuple(Tuple* tuple);
-  static std::string serializeWindow(Window* window);
+  static std::string serializeWindow(std::vector<Tuple*>* window);
   static Skyline* processWindow(Window* window);
 };
 
