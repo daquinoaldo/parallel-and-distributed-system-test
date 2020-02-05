@@ -23,30 +23,40 @@ Process a window takes $\sim 272$ times the time to pick it and $\sim 400$ times
 
 
 
-\subsection{Running times}
-\begin{table}[]
-\centering
-\begin{tabular}{|l|c|r|r|r|}
-\hline
-\multicolumn{1}{|c|}{} & nw & \multicolumn{1}{c|}{w = 128} & \multicolumn{1}{c|}{w = 256} & \multicolumn{1}{c|}{w = 512} \\ \hline
-Sequential & 1   & 4970262 & 18585713 &  \\ \hline
-Parallel   & 1   & 5343199 & 19621995 &  \\ \hline
-Parallel   & 2   & 2680228 & 9903538  &  \\ \hline
-Parallel   & 4   & 1334705 & 4939809  &  \\ \hline
-Parallel   & 8   & 668252  & 2480417  &  \\ \hline
-Parallel   & 16  & 344069  & 1244297  &  \\ \hline
-Parallel   & 32  & 199679  & 632766   &  \\ \hline
-Parallel   & 64  & 119624  & 405146   &  \\ \hline
-Parallel   & 128 & 193414  & 290523   &  \\ \hline
-Parallel   & 256 & 200697  & 246579   &  \\ \hline
-Fastflow   & 1   & 5279013 & 19650859 &  \\ \hline
-Fastflow   & 2   & 2654387 & 9842083  &  \\ \hline
-Fastflow   & 4   & 1331611 & 4940133  &  \\ \hline
-Fastflow   & 8   & 671599  & 2481758  &  \\ \hline
-Fastflow   & 16  & 342098  & 1242880  &  \\ \hline
-Fastflow   & 32  & 200525  & 637487   &  \\ \hline
-Fastflow   & 64  & 168367  & 557349   &  \\ \hline
-Fastflow   & 128 & 149153  & 443139   &  \\ \hline
-Fastflow   & 256 & 478662  & 670081   &  \\ \hline
-\end{tabular}
+\subsection{Completion times}
+\begin{table}[H]
+    \centering
+    \input{assets/tame_table}
+    \bigskip
+    \captionof{table}{Completion times}
 \end{table}
+
+
+
+\subsection{Speedup}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{assets/speedup}
+    \bigskip
+    \captionof{figure}{Speedup chart}
+\end{figure}
+
+
+
+\subsection{Scalability}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{assets/scalability}
+    \bigskip
+    \captionof{figure}{Scalability chart}
+\end{figure}
+
+
+
+\subsection{Efficiency}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{assets/efficiency}
+    \bigskip
+    \captionof{figure}{Efficiency chart}
+\end{figure}
