@@ -115,3 +115,27 @@ Fastflow 32 threads:    30362855
 Fastflow 64 threads:    25046960
 Fastflow 128 threads:   17368437
 Fastflow 256 threads:   13397304
+
+
+
+./skyline auto 42 34047 10 1 34300 0 256 (2^15)
+
+Sequential:             2240419239
+Parallel 1 threads:     2239525749
+Parallel 2 threads:     1205680376
+Parallel 4 threads:     592167486
+Parallel 8 threads:     290579826
+Parallel 16 threads:    148774537
+Parallel 32 threads:    80119117
+Parallel 64 threads:    43080131
+Parallel 128 threads:   29676940
+Parallel 256 threads:   20003871
+Fastflow 1 threads:     2417475928
+Fastflow 2 threads:     1194154297
+Fastflow 4 threads:     597213933
+Fastflow 8 threads:     289320548
+Fastflow 16 threads:    147079425
+Fastflow 32 threads:    71842999
+Fastflow 64 threads:    55776931
+Fastflow 128 threads:   37117106
+Fastflow 256 threads:   30046764
