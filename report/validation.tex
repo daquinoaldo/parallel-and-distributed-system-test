@@ -55,13 +55,17 @@ The \textit{speedup} is computed as $s(p) = \frac{T_{seq}}{T_{par}(p)}$.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.8\linewidth]{assets/speedup}
-    \bigskip
-    \caption{Speedup chart}
+    \begin{minipage}{.68\linewidth}
+        \includegraphics[width=\linewidth]{assets/speedup}
+    \end{minipage}
+    \begin{minipage}{.3\linewidth}
+        \includegraphics[width=\linewidth]{assets/speedup_ideal}
+    \end{minipage}
+    \caption{Speedup chart, on the right with the ideal speedup as reference.}
     \label{fig:speedup}
 \end{figure}
 
-\noindent
+\bigskip\noindent
 In the Figure \ref{fig:speedup} we can see how the C++ threads version is better than the \textit{FastFlow} one. Also, with the C++ threads only execution with $w = 128$ stop gain (and start lose) before reaching the $256$ workers, that is the machine limit. The \textit{FastFlow} version instead stop gain also with $w = 256$. Moreover, the \textit{FastFlow} implementation need more thread to reach the same speedup of the C++ threads one, and hence we can notice that with $w = 128$ the \textit{FastFlow} speedup start decreasing between $128$ and $256$ workers, C++ Threads instead between $64$ and $128$ but after reaching a higher speedup value.
 
 
@@ -71,8 +75,13 @@ The scalability is computed as $scalab(p) = \frac{T_{par}(1)}{T_{par}(p)}$.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.8\linewidth]{assets/scalability}
-    \caption{Scalability chart}
+    \begin{minipage}{.68\linewidth}
+        \includegraphics[width=\linewidth]{assets/scalability}
+    \end{minipage}
+    \begin{minipage}{.3\linewidth}
+        \includegraphics[width=\linewidth]{assets/scalability_ideal}
+    \end{minipage}
+    \caption{Scalability chart, on the right with the ideal scalability as reference.}
     \label{fig:scalability}
 \end{figure}
 
@@ -84,7 +93,7 @@ The scalability is pretty similar to the speedup of our application. Again, the 
 \subsection{Efficiency}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.8\linewidth]{assets/efficiency}
+    \includegraphics[width=.8\linewidth]{assets/efficiency_ideal}
     \caption{Efficiency chart}
     \label{fig:efficiency}
 \end{figure}
