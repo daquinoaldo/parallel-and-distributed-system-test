@@ -33,15 +33,16 @@
     
     \tableofcontents        % index
     \thispagestyle{empty}   % no page number
+    \clearpage              % start the chapters in the next page
     
-    \setcounter{page}{0}    % reset page number to start from first chapter with 1
+    \setcounter{page}{1}    % reset page number to start from first chapter
     
     % chapters
-    \include{introduction}
-    \include{par_arch_design}
-    \include{perf_modeling}
-    \include{implementation}
-    \include{validation}
-    \include{conclusion}
+    \input{introduction}
+    \input{par_arch_design}
+    \input{perf_modeling}
+    \input{implementation}
+    \input{validation}
+    \input{conclusion}
 
 \end{document}

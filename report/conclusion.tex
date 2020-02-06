@@ -1,1 +1,9 @@
 \section{Conclusion}
+By analysing the collected data and the provided plots, it is possible to notice that the program does not scale perfectly. It doesn't have slow start, since for a low parallelism degree the speedup curve in the figure \ref{fig:speedup} is very few lower than the ideal one, but then the behaviour worsen significantly when approaching the maximum number of cores in the machine. It also depend on the task weight: on heavier tasks this problem is mitigated, because the overhead is spread across a longer computational time.
+
+This is clear by watching the efficiency graph in figure \ref{fig:efficiency}, which shows an efficiency drop starting at $nw = 16$ and becoming worse after $nw = 32$ or $64$.
+
+That means this algorithm is efficient for machines up to $32$ threads, with the best result on $8$ - $16$ threads, for example on octa-core PC with 2 or 4 contexts per core. On machines with a higher parallel degree we should increment the number of worker $nw$ only for bigger windows. Another approach could be to reduce the CPU frequency: we obtain the same performances of running with $32$ threads at a higher frequency, but we could obtain a power save.
+
+\bigskip\noindent
+If we want to compare the two different approaches, from a performance point of view the native C++ Threads implementation is slightly better than using the \textit{FastFlow}, probably since the STL code is optimized for this task while \textit{FastFlow} is a generic library. On the other hand, from a programmer point of view, the \textit{FastFlow} module was easier and more carefree to be written, even if the amount of code is almost the same, thus in some cases may worth losing some performance.
