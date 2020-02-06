@@ -1,62 +1,48 @@
 # Skyline query
-_C++ Skyline implementation for the Parallel and Distributed Systems course @ UniPi_
+_C++ Skyline implementation for the Parallel and Distributed Systems course @ Pisa University, a.y 2018/19_
 
-## Compile and run
-
-### Standard version
+## Compile
 ```bash
-# compile
-make
-
-# run
-./skyline
+make           # compile with -o3
+make debug     # activate all warnings and compile with -g
+make profile   # compile with -o3 and -pg
+make clean     # remove all build files for a totally cleaned build
 ```
 
-
-### Debug version
-Use this version to debug the behavior of the tool, **not to test scalability**.
-- tuple components are number up to 100 instead of up to maxint
-- gdb debugger can be attached (compiles with -g)
-- all warnings are active at compile time
-- verbose logging, to verify the correctness of the computation
-- very poor performance
-
-```sh
-# compile
-make debug
-
-# run
-./skyline-debug
+## Run
+```bash
+./skyline      # runs in automatic mode
+./skyline -h   # print the help message with parameters and explanation
 ```
 
+## Helpers
+```bash
+make valgrind  # run valgrind on the last compiled executable (for memory leak)
+make gprof     # run gprof on the last compiled executable (to reason about where the most time is spent)
+make infer     # run infer on the last compiled executable (static analysis)
 
-### Infer analysis
-```sh
-make infer
-# --- or ---
-make infer-debug
+# Tip: you can pass arguments to the helpers
+make ARGS="parallel 42 100 ..." valgrind # you obtain valgrind ./skyline parallel 42 100 ...
 ```
 
-
-### Autopilot
-An _autopilot_ version is included. Automatically runs the tool with hard-coded parameters and shows timers and statistics.
-```sh
-./skyline auto
-```
-
-
-### Troubleshooting
-Requires CMake version 3.14 and cc and c++ version 7.3.  
+## Troubleshooting
+Requires CMake at least version 3.14 and CC and C++ at least version 7.3.  
 
 With CMake < 3.14 this project can be compiled manually as follows.
-
-```sh
+```bash
 cmake .
 make
 ```
 
 If CMake picks the wrong compilers, them can be forced as follows.
-```sh
+```bash
 cmake -DCMAKE_C_COMPILER=<cc/path> -DCMAKE_CXX_COMPILER=<c++/path> .
+make
+```
+
+## Compile on the Intel Xeon Phi
+```bash
+source /home/daquino-spm19/.bashrc
+cmake -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ .
 make
 ```
