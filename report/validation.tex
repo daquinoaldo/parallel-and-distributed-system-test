@@ -29,7 +29,7 @@ The completion times are collected with a constant seed equal to $42$, so that a
 \begin{table}[H]
     \centering
     \input{assets/time_table}
-    \caption{Completion times}
+    \caption{Completion times of the sequential version to vary the window size $w$ and of the parallel C++ threads and \textit{FastFlow} versions to vary the parallel degree $nw$ and the window size $w$.}
     \label{tab:time_table}
 \end{table}
 
@@ -39,7 +39,7 @@ We can observe that with a bigger window size $w$ our parallel implementations s
 \begin{figure}[H]
     \centering
     \includegraphics[width=.8\linewidth]{assets/completion_time}
-    \caption{Completion time chart in a logarithmic scale on the y axis, $nw$ on the x axis}
+    \caption{Completion time chart in a logarithmic scale on the y axis, $nw$ on the x axis.}
     \label{fig:completion_time}
 \end{figure}
 
@@ -51,7 +51,7 @@ This behaviour affects the speedup and the scalability, as we can notice in the 
 
 
 \subsection{Speedup}
-The \textit{speedup} is computed as $s(p) = \frac{T_{seq}}{T_{par}(p)}$.
+The \textit{speedup} is computed as $s(p) = \frac{T_{seq}}{T_{par}(p)}$. Ideally, the \textit{speedup} should be the same of the parallel degree $p$.
 
 \begin{figure}[H]
     \centering
@@ -71,7 +71,7 @@ In the Figure \ref{fig:speedup} we can see how the C++ threads version is better
 
 
 \subsection{Scalability}
-The scalability is computed as $scalab(p) = \frac{T_{par}(1)}{T_{par}(p)}$.
+The \textit{scalability} is computed as $scalab(p) = \frac{T_{par}(1)}{T_{par}(p)}$. Ideally the \textit{scalability} should be the same of the parallel degree $p$.
 
 \begin{figure}[H]
     \centering
@@ -91,9 +91,14 @@ The scalability is pretty similar to the speedup of our application. Again, the 
 
 
 \subsection{Efficiency}
+The \textit{efficiency} is computed as $\epsilon(p) = \frac{T_{seq}}{p\ \cdot\ T_{par}(p)}$. In efficient implementation we have $\epsilon = 1$ regardless of the parallel degree $p$.
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=.8\linewidth]{assets/efficiency_ideal}
-    \caption{Efficiency chart}
+    \caption{Efficiency chart.}
     \label{fig:efficiency}
 \end{figure}
+
+\noindent
+We can clearly see that we have a high efficiency up to $16$ - $32$ threads, and then starts decreasing drastically. Increasing the window size $w$, the efficiency start decreasing at a higher parallel degree $nw$.
