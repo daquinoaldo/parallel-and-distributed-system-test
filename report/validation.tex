@@ -29,54 +29,62 @@ The completion times are collected with a constant seed equal to $42$, so that a
 \begin{table}[H]
     \centering
     \input{assets/time_table}
-    \bigskip
     \caption{Completion times}
     \label{tab:time_table}
 \end{table}
 
+\noindent
+We can observe that with a bigger window size $w$ our parallel implementations scale better, since the workload of each task is bigger and the overhead is spread over longer times and better mitigated.
+
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.7\linewidth]{assets/completion_time}
-    \bigskip
+    \includegraphics[width=.8\linewidth]{assets/completion_time}
     \caption{Completion time chart in a logarithmic scale on the y axis, $nw$ on the x axis}
     \label{fig:completion_time}
 \end{figure}
 
 \noindent
-We can observe that with a bigger window size $w$ our parallel implementations scale better, since the workload of each task is bigger and the overhead is spread over longer times and better mitigated.
-
-In the Figure \ref{fig:completion_time} we see clearly the lines tagged as $w = 128$ and $w = 256$ descend with a low $nw$ but than ascend when the $nw$ increases.
+In the Figure \ref{fig:completion_time} we see clearly how the lines tagged as $w = 128$ and $w = 256$ descend with a low $nw$ but than ascend when the $nw$ increases.
 
 This behaviour affects the speedup and the scalability, as we can notice in the following sections.
 
+
+
 \subsection{Speedup}
 The \textit{speedup} is computed as $s(p) = \frac{T_{seq}}{T_{par}(p)}$.
+
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\linewidth]{assets/speedup}
+    \includegraphics[width=.8\linewidth]{assets/speedup}
     \bigskip
     \caption{Speedup chart}
     \label{fig:speedup}
 \end{figure}
 
+\noindent
+In the Figure \ref{fig:speedup} we can see how the C++ threads version is better than the \textit{FastFlow} one. Also, with the C++ threads only execution with $w = 128$ stop gain (and start lose) before reaching the $256$ workers, that is the machine limit. The \textit{FastFlow} version instead stop gain also with $w = 256$. Moreover, the \textit{FastFlow} implementation need more thread to reach the same speedup of the C++ threads one, and hence we can notice that with $w = 128$ the \textit{FastFlow} speedup start decreasing between $128$ and $256$ workers, C++ Threads instead between $64$ and $128$ but after reaching a higher speedup value.
+
 
 
 \subsection{Scalability}
+The scalability is computed as $scalab(p) = \frac{T_{par}(1)}{T_{par}(p)}$.
+
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\linewidth]{assets/scalability}
-    \bigskip
+    \includegraphics[width=.8\linewidth]{assets/scalability}
     \caption{Scalability chart}
     \label{fig:scalability}
 \end{figure}
+
+\noindent
+The scalability is pretty similar to the speedup of our application. Again, the C++ Threads version is better than the \textbf{FastFlow} one. Also, there is a strange behavior of \textbf{FastFlow}: while the C++ Threads graph has an "S"-shaped curve, in this one we can notice worsening between $32$ and $64$ threads, but then there is a new improvement and the function continues almost linearly. This is not as good as the ideal one, that is exponential, but may mean that at some point, with a higher number of cores, using \textit{FastFlow} can be more convinient than our C++ Thread implementation.
 
 
 
 \subsection{Efficiency}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\linewidth]{assets/efficiency}
-    \bigskip
+    \includegraphics[width=.8\linewidth]{assets/efficiency}
     \caption{Efficiency chart}
     \label{fig:efficiency}
 \end{figure}
