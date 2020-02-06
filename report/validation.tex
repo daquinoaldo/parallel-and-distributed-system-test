@@ -24,21 +24,39 @@ Process a window takes $\sim 272$ times the time to pick it and $\sim 400$ times
 
 
 \subsection{Completion times}
+The completion times are collected with a constant seed equal to $42$, so that at each run we obtain the same input stream. The tuple size $t$ is fixed at $10$ and the sliding factor $k$ at $1$. The variable parameters are the $nw$ (from $2^0$ to $2^8$) and the window size $w$ (from $2^7$ to $2^{11}$). Since we want always the same number of window $w\_no = 12800$ (that is $50$ window per worker with $256$ workers), the stream length changes with the window size $w$. Hence, because $w\_no = \lfloor\frac{l-w}{k}\rfloor+1$, with a fixed $w\_no$ the stream size will be $l = (w\_no - 1) \cdot k + w$. For example, with $w = 128$ we have $l = 12927$.
+
 \begin{table}[H]
     \centering
-    \input{assets/tame_table}
+    \input{assets/time_table}
     \bigskip
-    \captionof{table}{Completion times}
+    \caption{Completion times}
+    \label{tab:time_table}
 \end{table}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.7\linewidth]{assets/completion_time}
+    \bigskip
+    \caption{Completion time chart in a logarithmic scale on the y axis, $nw$ on the x axis}
+    \label{fig:completion_time}
+\end{figure}
 
+\noindent
+We can observe that with a bigger window size $w$ our parallel implementations scale better, since the workload of each task is bigger and the overhead is spread over longer times and better mitigated.
+
+In the Figure \ref{fig:completion_time} we see clearly the lines tagged as $w = 128$ and $w = 256$ descend with a low $nw$ but than ascend when the $nw$ increases.
+
+This behaviour affects the speedup and the scalability, as we can notice in the following sections.
 
 \subsection{Speedup}
+The \textit{speedup} is computed as $s(p) = \frac{T_{seq}}{T_{par}(p)}$.
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{assets/speedup}
     \bigskip
-    \captionof{figure}{Speedup chart}
+    \caption{Speedup chart}
+    \label{fig:speedup}
 \end{figure}
 
 
@@ -48,7 +66,8 @@ Process a window takes $\sim 272$ times the time to pick it and $\sim 400$ times
     \centering
     \includegraphics[width=\linewidth]{assets/scalability}
     \bigskip
-    \captionof{figure}{Scalability chart}
+    \caption{Scalability chart}
+    \label{fig:scalability}
 \end{figure}
 
 
@@ -58,5 +77,6 @@ Process a window takes $\sim 272$ times the time to pick it and $\sim 400$ times
     \centering
     \includegraphics[width=\linewidth]{assets/efficiency}
     \bigskip
-    \captionof{figure}{Efficiency chart}
+    \caption{Efficiency chart}
+    \label{fig:efficiency}
 \end{figure}
