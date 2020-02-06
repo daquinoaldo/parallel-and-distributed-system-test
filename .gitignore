@@ -1,37 +1,13 @@
 # CLion
 .idea
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app
-
 # Make, CMake & binaries
-*build*
-skyline-debug
+build
 skyline
 
 # valgrind, gprof & infer
 valgrind-out.txt
+infer-out.txt
 gmon.out
-infer-out
+gprof-helper.so
+gprof-out.txt

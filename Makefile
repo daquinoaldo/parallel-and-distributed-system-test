@@ -1,47 +1,43 @@
-.PHONY: build debug valgrind valgrind-debug infer infer-debug clean clean-debug clean-all auto
+.PHONY: build debug profile valgrind infer clean
 
-build: clean
-	cmake -B cmake-build -DCMAKE_EXPORT_COMPILE_COMMANDS=1
-	make -C cmake-build
-	cp cmake-build/skyline skyline
+build:
+	cmake -B build
+	make -C build
+	cp build/skyline skyline
 
-debug: clean-debug
-	cmake -B cmake-build-debug -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=1
-	make -C cmake-build-debug
-	cp cmake-build-debug/skyline skyline-debug
+debug:
+	cmake -B build -DCMAKE_BUILD_TYPE=Debug
+	make -C build
+	cp build/skyline skyline
 
-valgrind: build
+profile:
+	# http://sam.zoy.org/writings/programming/gprof.html
+	gcc -shared -fPIC gprof-helper.c -o gprof-helper.so -lpthread -ldl
+	cmake -B build -DCMAKE_BUILD_TYPE=Profile
+	make -C build
+	cp build/skyline skyline
+
+valgrind:
 	valgrind --leak-check=full \
-					--show-leak-kinds=all \
-					--track-origins=yes \
-					--verbose \
-					--log-file=valgrind-out.txt \
-					./skyline
+					 --show-leak-kinds=all \
+					 --track-origins=yes \
+					 --verbose \
+					 --log-file=valgrind-out.txt \
+					 ./skyline ${ARGS}
 
-valgrind-debug: debug
-	valgrind --leak-check=full \
-					--show-leak-kinds=all \
-					--track-origins=yes \
-					--verbose \
-					--log-file=valgrind-out.txt \
-					./skyline-debug #parallel 42 3 2 1 5
+infer:
+	infer run --compilation-database build/compile_commands.json --keep-going
 
-infer: build
-	infer run --compilation-database cmake-build/compile_commands.json --keep-going
-
-infer-debug: debug
-		infer run --compilation-database cmake-build-debug/compile_commands.json --keep-going
+gprof:
+	# http://sam.zoy.org/writings/programming/gprof.html
+	LD_PRELOAD=./gprof-helper.so ./skyline ${ARGS}
+	gprof skyline > gprof-out.txt
 
 clean:
-	rm -rf cmake-build
+	rm -rf build
 	rm -f skyline
-
-clean-debug:
-	rm -rf cmake-build-debug
-	rm -f skyline-debug
-
-clean-all: clean clean-debug
+	rm -f gmon.out
+	rm -f gprof-helper.so
+	rm -f gprof-out.txt
+	rm -f valgrind-out.txt
 	rm -rf infer-out
-
-auto: build
-	./skyline auto
