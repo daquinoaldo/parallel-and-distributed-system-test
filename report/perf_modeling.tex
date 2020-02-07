@@ -1,6 +1,6 @@
 \section{Performance modeling}
 
-In order to theoretically model the performances of the skyline algorithm, we have to consider those input values:
+In order to model the theoretical performances of the skyline algorithm, we have to consider those input values:
 \begin{itemize}
     \item $w$ the window size, i.e. the number of tuple inside a window;
     \item $t$ the tuple size, i.e. the number of element inside a tuple;
@@ -43,7 +43,7 @@ Therefore, the cost of the sequential algorithm is $T_{extract} +  T_{compute} +
 
 
 \subsection{Parallel algorithm}
-For the sake of simplicity, in the analysis we assume that the number of window $w\_no$ is a multiple of $nw$. Since the time to compute the skyline of a window can differ, we assume also that on average the time for computing the skylines of the assigned windows is more or less the same for each worker.
+For the sake of simplicity, in the analysis we assume that the number of window $w\_no$ is a multiple of $nw$. Since the time to compute the skyline of a window can differ, we also assume that on average the time for computing the skylines of the assigned windows is more or less the same for each worker.
 
 \bigskip\noindent
 The cost of the parallel algorithm is $T_{extract} +  \frac{T_{compute}}{nw} + T_{consume}$, plus the overhead cost of the additional data structures and locks.
@@ -70,7 +70,7 @@ Hence, the cost of the parallel algorithm including the overhead is the followin
 \end{center}
 
 \noindent
-From  this formula we can easily see how much the application can scale. We stop gain when the threads have to wait to acquire the lock. This happen roughly when the thread have finished his bunch of work before all the other thread have done the pop to take their task, and in the same way on the output queue.\\
+From  this formula we can easily see how much the application can scale. We stop gain when the threads have to wait to acquire the lock. This happens roughly when the thread have finished his bunch of work before all the other threads have done the pop to take their task, and in the same way on the output queue.\\
 This occurs in one of the following case:
 \begin{center}
     $T_{compute\ window} + T_{push\ window} < T_{pop\ window} \cdot nw$ \\
