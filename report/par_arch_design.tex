@@ -18,3 +18,10 @@ Since the second step is the one that can scale, it can also be seen as an emitt
     \caption{Parallel architecture diagram}
     \label{fig:parallel_diagram}
 \end{figure}
+
+\noindent
+We considered also other patterns, but they were discarded for poor performances.
+
+For example, we can simplify the architecture explained above by reducing it to a farm where workers pick windows and consume skylines by theirself, but extracting a windows is a heavier task than popping it from a list, and is not a good idea to do that while holding a lock.
+
+Another option was to switch from a self-organized farm to an emitter-collector farm, where the emitter pushes the windows to a worker-dedicated queue instead of the shared queue. The same for the collector. Anyway, it turns out that the real bottleneck was the memory and this implementation increase the overhead. Since the performance doesn't increase even pushing more windows at time to the workers, also this version was discarded.
