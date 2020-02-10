@@ -10,8 +10,7 @@ We have chosen the Skyline application, for which we provide a sequential versio
 In this report we provide the benchmark of each implementation, and we discuss the scalability of the system and the possible bottleneck and hardware limits.
 
 \subsection{Skyline algorithm}
-The target is to develop an application computing the skyline of a stream of tuples. We consider tuples
-made of $t$ items. Items at position $i$ have type $type_i$. For each $type_i$, an order is defined by a $>_i$ relation. A tuple $t_1 = <x_1, ... , x_t>$ dominates another tuple $t_2 = <y_1, ... , y_t>$ if and only if at least one component $x_i$ of $t_1$ is better than the corresponding component $y_i$ of $t_2$ (i.e. $x_i >_i y_i$) and all the other components of $t_1$ (i.e. all the $x_j$ such that $j \neq i$) are better or equal (i.e. either $x_j >_j y_j$ or $x_j =_j y_j$). The skyline of a set of tuples is the set of tuples that are not dominated by any other tuple.
+The target is to develop an application computing the skyline of a stream of tuples. We consider tuples made of $t$ items. Items at position $i$ have type $type_i$. For each $type_i$, an order is defined by a $>_i$ relation. A tuple $t_1 = <x_1, ... , x_t>$ dominates another tuple $t_2 = <y_1, ... , y_t>$ if and only if at least one component $x_i$ of $t_1$ is better than the corresponding component $y_i$ of $t_2$ (i.e. $x_i >_i y_i$) and all the other components of $t_1$ (i.e. all the $x_j$ such that $j \neq i$) are better or equal (i.e. either $x_j >_j y_j$ or $x_j =_j y_j$). The skyline of a set of tuples is the subset of the tuples that are not dominated by any other tuple.
 
 The skyline stream application considers a possibly infinite stream of tuples. For each window of size $w$ ($w$ consecutive tuples), the application computes the skyline and outputs the skyline onto the output stream. Consecutive windows differ by exactly $k$ item (sliding factor).
 

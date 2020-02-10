@@ -66,7 +66,7 @@ The \textit{speedup} is computed as $s(p) = \frac{T_{seq}}{T_{par}(p)}$. Ideally
 \end{figure}
 
 \bigskip\noindent
-In the figure \ref{fig:speedup} we can see how the C++ threads version is better than the \textit{FastFlow} one. Also, with the C++ threads only execution with $w = 128$ stop gain (and start lose) before reaching the $256$ workers, that is the machine limit. The \textit{FastFlow} version instead stop gain also with $w = 256$. Moreover, the \textit{FastFlow} implementation need more thread to reach the same speedup of the C++ threads one, and hence we can notice that with $w = 128$ the \textit{FastFlow} speedup start decreasing between $128$ and $256$ workers, C++ Threads instead between $64$ and $128$ but after reaching a higher speedup value.
+In the figure \ref{fig:speedup} we can see how the C++ threads version is better than the \textit{FastFlow} one. Also, with the C++ threads, only the execution with $w = 128$ stop gain (and start lose) before reaching the $256$ workers, that is the machine limit. The \textit{FastFlow} version instead stop gain also with $w = 256$. Moreover, the \textit{FastFlow} implementation need more thread to reach the same speedup of the C++ threads one, and hence we can notice that with $w = 128$ the \textit{FastFlow} speedup start decreasing between $128$ and $256$ workers, C++ Threads instead between $64$ and $128$ but after reaching a higher speedup value.
 
 
 
@@ -86,12 +86,12 @@ The \textit{scalability} is computed as $scalab(p) = \frac{T_{par}(1)}{T_{par}(p
 \end{figure}
 
 \noindent
-The scalability is pretty similar to the speedup of our application. Again, the C++ Threads version is better than the \textbf{FastFlow} one. Also, there is a strange behavior of \textbf{FastFlow}: while the C++ Threads graph has an "S"-shaped curve, in this one we can notice worsening between $32$ and $64$ threads, but then there is a new improvement and the function continues almost linearly. This is not as good as the ideal one, that is exponential, but may mean that at some point, with a higher number of cores, using \textit{FastFlow} can be more convenient than our C++ Thread implementation.
+The scalability is pretty similar to the speedup of our application. Again, the C++ Threads version is better than the \textit{FastFlow} one. Also, there is a strange behavior of \textit{FastFlow}: while the C++ Threads graph has an "S"-shaped curve, in this one we can notice worsening between $32$ and $64$ threads, but then there is a new improvement and the function continues almost linearly. This is not as good as the ideal one, that is exponential, but may mean that at some point, with a higher number of cores, using \textit{FastFlow} can be more convenient than our C++ Thread implementation.
 
 
 
 \subsection{Efficiency}
-The \textit{efficiency} is computed as $\epsilon(p) = \frac{T_{seq}}{p\ \cdot\ T_{par}(p)}$. In efficient implementation we have $\epsilon = 1$ regardless of the parallel degree $p$.
+The \textit{efficiency} is computed as $\epsilon(p) = \frac{T_{seq}}{p\ \cdot\ T_{par}(p)}$. In an efficient implementation we have $\epsilon = 1$ regardless of the parallel degree $p$.
 
 \begin{figure}[H]
     \centering

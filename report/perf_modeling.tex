@@ -15,10 +15,10 @@ From this values we can derive the following costs:
 \begin{itemize}
     \item $T_{extract\ item}$ the time to extract one item from the the input stream;
     \item $T_{extract\ window}$ the time to extract one window from the the input stream, that is $T_{extract\ item} \cdot w$;
-    \item $T_{extract}$ the time to extract all the windows from the the input stream, that is $T_{extract\ item} \cdot w\_no$;
+    \item $T_{extract}$ the time to extract all the windows from the the input stream, that is $T_{extract\ window} \cdot w\_no$;
     \item $T_{compare\ items}$ the time to compare two items of two different tuple;
     \item $T_{compare\ tuples}$ the time to compare two tuple, that is $T_{compare\ items} \cdot \mathcal{O}(t)$ (is an upper bound since the optimized algorithm doesn't need to compare all the items if none of the tuple can dominate the other just after two item);
-    \item $T_{compute\ window}$ the time to compute the skyline of a window, that is $T_{compare\ tuples} \cdot O(w)$ (is an upper bound since the optimized algorithm doesn't need to compare two tuple if one of them is already dominated by another one);
+    \item $T_{compute\ window}$ the time to compute the skyline of a window, that is $T_{compare\ tuples} \cdot O(w^2)$ (is an upper bound since the optimized algorithm doesn't need to compare two tuple if one of them is already dominated by another one);
     \item $T_{compute}$ the time to compute the skyline of all the windows, that is $T_{compute\ window} \cdot w\_no$;
     \item $T_{consume\ skyline}$ the time to print and delete the skyline;
     \item $T_{consume}$ the time to print and delete all the skylines, that is $T_{consume\ skyline} \cdot w\_no$.
@@ -30,7 +30,7 @@ The sequential algorithm picks a window from the input stream, computes and prin
 
 \begin{verbatim}
 sequential(inputStream) {
-    for (int i = 0 to #window) {
+    for (int i = 0 to w_no) {
         window = inputStream.getWindow(i);
         skyline = compute_skyline(window);
         print(skyline);
